@@ -31,37 +31,88 @@ interface InventoryItem {
 }
 
 function Dashboard() {
+  const getRowBackground = (expiration: string | null) => {
+    if (!expiration) return "transparent";
+    const expDate = new Date(expiration);
+    const currentDate = new Date();
+    const diffInDays = Math.floor(
+      (expDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    if (diffInDays < 7) return "#FF6961";
+    if (diffInDays >= 7 && diffInDays <= 14) return "#FFFB29";
+    if (diffInDays > 14) return "#77DD77";
+    return "transparent";
+  };
+
+  const getStockCellColor = (stock: number) => {
+    if (stock < 5) return "rgba(255, 0, 0, 0.3)";
+    if (stock >= 5 && stock <= 10) return "rgba(241, 154, 24, 0.65)";
+    return "transparent";
+  };
+
   const [inventoryData, setInventoryData] = useState([
     {
       category: "Food",
       name: "Watermelon",
-      price: "$1.50",
-      expiration: "12/25/2024",
-      stock: 50,
+      price: "1.50",
+      expiration: "2025-03-07",
+      stock: 4,
+      checked: false,
+    },
+    {
+      category: "Food",
+      name: "Milk",
+      price: "1.50",
+      expiration: "2025-03-25",
+      stock: 7,
+      checked: false,
+    },
+    {
+      category: "Food",
+      name: "Egg",
+      price: "1.50",
+      expiration: "2025-03-15",
+      stock: 12,
+      checked: false,
+    },
+    {
+      category: "Food",
+      name: "Sushi",
+      price: "1.50",
+      expiration: "2025-03-07",
+      stock: 20,
+      checked: false,
+    },
+    {
+      category: "Food",
+      name: "Doritos",
+      price: "1.50",
+      expiration: "2025-03-07",
+      stock: 10,
       checked: false,
     },
     {
       category: "Electronics",
       name: "Samsung TV",
-      price: "$900.00",
+      price: "900.00",
       expiration: "",
-      stock: 0,
+      stock: 10,
       checked: false,
     },
     {
       category: "Clothing",
       name: "Jeans",
-      price: "$60.00",
+      price: "60.00",
       expiration: "",
-      stock: 50,
+      stock: 10,
       checked: false,
     },
     {
       category: "Clothing",
       name: "T-Shirt",
-      price: "$30",
-      expiration: "2025-12-31",
-      stock: 100,
+      price: "30.00",
+      expiration: "",
+      stock: 10,
       checked: false,
     },
   ]);
@@ -85,6 +136,33 @@ function Dashboard() {
     );
   };
 
+  const calculateMetrics = () => {
+    const categories = ["Food", "Clothing", "Electronics", "Overall"];
+    return categories.map((category) => {
+      const filteredItems =
+        category === "Overall"
+          ? inventoryData
+          : inventoryData.filter((item) => item.category === category);
+
+      const totalStock = filteredItems.reduce(
+        (acc, item) => acc + item.stock,
+        0
+      );
+      const totalValue = filteredItems.reduce(
+        (acc, item) => acc + parseFloat(item.price) * item.stock,
+        0
+      );
+      const avgPrice = totalStock > 0 ? totalValue / totalStock : 0;
+
+      return {
+        category,
+        totalStock,
+        totalValue,
+        avgPrice,
+      };
+    });
+  };
+
   return (
     <Box
       sx={{
@@ -106,7 +184,11 @@ function Dashboard() {
           minHeight: "80vh",
         }}
       >
-        <Typography variant="h4" gutterBottom>
+        <Typography
+          variant="h3"
+          color="black"
+          sx={{ mb: 4, fontWeight: "600", textDecoration: "underline" }}
+        >
           Inventory Dashboard
         </Typography>
 
@@ -148,14 +230,22 @@ function Dashboard() {
             </Grid2>
 
             <Grid2 size={{ xs: 12, sm: 2 }}>
-              <Button variant="contained" color="primary" fullWidth>
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                sx={{ fontWeight: "bold" }}
+              >
                 Search
               </Button>
             </Grid2>
           </Grid2>
         </Box>
 
-        <Button variant="contained" color="success" sx={{ mb: 2 }}>
+        <Button
+          variant="contained"
+          sx={{ mb: 2, backgroundColor: "green", fontWeight: "bold" }}
+        >
           New Product
         </Button>
 
@@ -165,20 +255,77 @@ function Dashboard() {
             <TableHead>
               <TableRow>
                 <TableCell>✔</TableCell>
-                <TableCell onClick={() => handleSort("category")}>
+                <TableCell
+                  onClick={() => handleSort("category")}
+                  sx={{
+                    fontWeight: "bold",
+                    transition: "all ease 300ms",
+                    "&:hover": {
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                      color: "#4971d6",
+                    },
+                  }}
+                >
                   Category ⬍
                 </TableCell>
-                <TableCell onClick={() => handleSort("name")}>Name ⬍</TableCell>
-                <TableCell onClick={() => handleSort("price")}>
+                <TableCell
+                  onClick={() => handleSort("name")}
+                  sx={{
+                    fontWeight: "bold",
+                    transition: "all ease 300ms",
+                    "&:hover": {
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                      color: "#4971d6",
+                    },
+                  }}
+                >
+                  Name ⬍
+                </TableCell>
+                <TableCell
+                  onClick={() => handleSort("price")}
+                  sx={{
+                    fontWeight: "bold",
+                    transition: "all ease 300ms",
+                    "&:hover": {
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                      color: "#4971d6",
+                    },
+                  }}
+                >
                   Price ⬍
                 </TableCell>
-                <TableCell onClick={() => handleSort("expiration")}>
+                <TableCell
+                  onClick={() => handleSort("expiration")}
+                  sx={{
+                    fontWeight: "bold",
+                    transition: "all ease 300ms",
+                    "&:hover": {
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                      color: "#4971d6",
+                    },
+                  }}
+                >
                   Expiration Date ⬍
                 </TableCell>
-                <TableCell onClick={() => handleSort("stock")}>
+                <TableCell
+                  onClick={() => handleSort("stock")}
+                  sx={{
+                    fontWeight: "bold",
+                    transition: "all ease 300ms",
+                    "&:hover": {
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                      color: "#4971d6",
+                    },
+                  }}
+                >
                   Stock ⬍
                 </TableCell>
-                <TableCell>Actions</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Actions</TableCell>
               </TableRow>
             </TableHead>
 
@@ -193,22 +340,57 @@ function Dashboard() {
                     />
                   </TableCell>
 
-                  <TableCell>{item.category}</TableCell>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.price}</TableCell>
-                  <TableCell>{item.expiration || "-"}</TableCell>
-                  <TableCell>{item.stock}</TableCell>
+                  <TableCell
+                    sx={{ backgroundColor: getRowBackground(item.expiration) }}
+                  >
+                    {item.category}
+                  </TableCell>
+                  <TableCell
+                    sx={{ backgroundColor: getRowBackground(item.expiration) }}
+                  >
+                    {item.name}
+                  </TableCell>
+                  <TableCell
+                    sx={{ backgroundColor: getRowBackground(item.expiration) }}
+                  >
+                    ${Number(item.price).toFixed(2)}
+                  </TableCell>
+                  <TableCell
+                    sx={{ backgroundColor: getRowBackground(item.expiration) }}
+                  >
+                    {item.expiration || "-"}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      backgroundColor: getStockCellColor(item.stock),
+                      fontWeight: "bold",
+                      borderLeft: "0.5px solid black",
+                      borderRight: "0.5px solid black",
+                    }}
+                  >
+                    {item.stock}
+                  </TableCell>
 
                   <TableCell>
                     <Button
                       variant="contained"
                       color="primary"
                       size="small"
-                      sx={{ mr: 1 }}
+                      sx={{ mr: 1, fontWeight: "bold" }}
                     >
                       Edit
                     </Button>
-                    <Button variant="contained" color="secondary" size="small">
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "#e85831",
+                        "&:hover": {
+                          backgroundColor: "#d64b24",
+                        },
+                        fontWeight: "bold",
+                      }}
+                      size="small"
+                    >
                       Delete
                     </Button>
                   </TableCell>
@@ -218,8 +400,86 @@ function Dashboard() {
           </Table>
         </TableContainer>
 
-        <Box sx={{ display: "flex", justifyContent: "center, mt:4" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
           <Pagination count={10} color="primary" />
+        </Box>
+
+        <Box sx={{ mt: 4, p: 3, bgcolor: "#f9f9f9", borderRadius: 2 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              color: "black",
+              fontWeight: "bold",
+              textDecoration: "underline",
+            }}
+          >
+            Inventory Metrics
+          </Typography>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ fontWeight: "bold" }}>Category</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>
+                  Total Products in Stock
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>
+                  Total Value in Stock
+                </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>
+                  Average Price in Stock
+                </TableCell>
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {calculateMetrics().map(
+                ({ category, totalStock, totalValue, avgPrice }) => (
+                  <TableRow
+                    key={category}
+                    sx={{
+                      borderTop:
+                        category === "Overall" ? "1.5px solid gray" : "none",
+                      fontWeight: category === "Overall" ? "bold" : "normal",
+                    }}
+                  >
+                    <TableCell
+                      sx={{
+                        fontWeight: category === "Overall" ? "bold" : "normal",
+                      }}
+                    >
+                      {category}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: category === "Overall" ? "bold" : "normal",
+                      }}
+                    >
+                      {totalStock}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: category === "Overall" ? "bold" : "normal",
+                      }}
+                    >
+                      ${totalValue.toFixed(2)}
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: category === "Overall" ? "bold" : "normal",
+                      }}
+                    >
+                      ${avgPrice.toFixed(2)}
+                    </TableCell>
+                  </TableRow>
+                )
+              )}
+            </TableBody>
+          </Table>
         </Box>
       </Container>
     </Box>
