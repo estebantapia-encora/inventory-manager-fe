@@ -168,26 +168,28 @@ function Dashboard() {
       sx={{
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
+        alignItems: "start",
         minHeight: "100vh",
         width: "100vw",
         bgcolor: "#f5f5f5",
+        overflowY: "auto",
+        paddingTop: "20px",
       }}
     >
       <Container
         maxWidth="lg"
         sx={{
+          mt: 4,
           bgcolor: "#fff",
-          p: 4,
           borderRadius: 2,
           boxShadow: 4,
           minHeight: "80vh",
         }}
       >
         <Typography
-          variant="h3"
+          variant="h4"
           color="black"
-          sx={{ mb: 4, fontWeight: "600", textDecoration: "underline" }}
+          sx={{ mt: 2, fontWeight: "600", textDecoration: "underline" }}
         >
           Inventory Dashboard
         </Typography>
@@ -409,7 +411,10 @@ function Dashboard() {
           <Pagination count={10} color="primary" />
         </Box>
 
-        <Box sx={{ mt: 4, p: 3, bgcolor: "#f9f9f9", borderRadius: 2 }}>
+        <Box
+          component={Paper}
+          sx={{ mt: 2, mb: 2, p: 3, bgcolor: "#f9f9f9", borderRadius: 2 }}
+        >
           <Typography
             variant="h6"
             sx={{
