@@ -54,7 +54,7 @@ function Dashboard() {
     {
       category: "Food",
       name: "Watermelon",
-      price: "1.50",
+      price: "1.5",
       expiration: "2025-03-07",
       stock: 4,
       checked: false,
@@ -62,7 +62,7 @@ function Dashboard() {
     {
       category: "Food",
       name: "Milk",
-      price: "1.50",
+      price: "1.5",
       expiration: "2025-03-25",
       stock: 7,
       checked: false,
@@ -70,7 +70,7 @@ function Dashboard() {
     {
       category: "Food",
       name: "Egg",
-      price: "1.50",
+      price: "1.5",
       expiration: "2025-03-15",
       stock: 12,
       checked: false,
@@ -78,7 +78,7 @@ function Dashboard() {
     {
       category: "Food",
       name: "Sushi",
-      price: "1.50",
+      price: "1.5",
       expiration: "2025-03-07",
       stock: 20,
       checked: false,
@@ -86,7 +86,7 @@ function Dashboard() {
     {
       category: "Food",
       name: "Doritos",
-      price: "1.50",
+      price: "1.5",
       expiration: "2025-03-07",
       stock: 10,
       checked: false,
@@ -94,7 +94,7 @@ function Dashboard() {
     {
       category: "Electronics",
       name: "Samsung TV",
-      price: "900.00",
+      price: "900",
       expiration: "",
       stock: 10,
       checked: false,
@@ -102,7 +102,7 @@ function Dashboard() {
     {
       category: "Clothing",
       name: "Jeans",
-      price: "60.00",
+      price: "60",
       expiration: "",
       stock: 10,
       checked: false,
@@ -110,7 +110,31 @@ function Dashboard() {
     {
       category: "Clothing",
       name: "T-Shirt",
-      price: "30.00",
+      price: "30",
+      expiration: "",
+      stock: 10,
+      checked: false,
+    },
+    {
+      category: "Clothing",
+      name: "T-Shirt",
+      price: "30",
+      expiration: "",
+      stock: 10,
+      checked: false,
+    },
+    {
+      category: "Clothing",
+      name: "T-Shirt",
+      price: "30",
+      expiration: "",
+      stock: 10,
+      checked: false,
+    },
+    {
+      category: "Clothing",
+      name: "T-Shirt",
+      price: "30",
       expiration: "",
       stock: 10,
       checked: false,
@@ -118,23 +142,71 @@ function Dashboard() {
   ]);
 
   const handleSort = (field: keyof InventoryItem) => {
-    const sortedData = [...inventoryData].sort((a, b) =>
-      typeof a[field] === "number"
-        ? (a[field] as number) - (b[field] as number)
-        : String(a[field]).localeCompare(String(b[field]))
+    setInventoryData((prevData) =>
+      [...prevData].sort((a, b) =>
+        typeof a[field] === "number"
+          ? (a[field] as number) - (b[field] as number)
+          : String(a[field]).localeCompare(String(b[field]))
+      )
     );
-    setInventoryData(sortedData);
   };
 
   const handleCheckboxChange = (index: number) => {
     setInventoryData((prevData) =>
       prevData.map((item, i) =>
         i === index
-          ? { ...item, checked: !item.checked, stock: item.checked ? 10 : 0 }
+          ? { ...item, checked: !item.checked, stock: !item.checked ? 10 : 0 }
           : item
       )
     );
   };
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const [searchFilters, setSearchFilters] = useState({
+    name: "",
+    category: "",
+    availability: "",
+  });
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedAvailability, setselectedAvailability] = useState("");
+
+  const handleSearch = () => {
+    setSearchTerm(searchFilters.name);
+    setSelectedCategory(searchFilters.category);
+    setselectedAvailability(searchFilters.availability);
+    setCurrentPage(1);
+  };
+
+  const updateSearchFilters = (field: string, value: string) => {
+    setSearchFilters((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handlePageChange = (
+    _event: React.ChangeEvent<unknown>,
+    page: number
+  ) => {
+    setCurrentPage(page);
+  };
+
+  const filteredData = inventoryData.filter((item) => {
+    return (
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (selectedCategory ? item.category === selectedCategory : true) &&
+      (selectedAvailability
+        ? selectedAvailability === "Available"
+          ? item.stock > 0
+          : item.stock === 0
+        : true)
+    );
+  });
+
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const calculateMetrics = () => {
     const categories = ["Food", "Clothing", "Electronics", "Overall"];
@@ -173,7 +245,7 @@ function Dashboard() {
         width: "100vw",
         bgcolor: "#f5f5f5",
         overflowY: "auto",
-        paddingTop: "20px",
+        marginTop: "20px",
       }}
     >
       <Container
@@ -198,16 +270,24 @@ function Dashboard() {
           <Grid2 container spacing={2} alignItems="center">
             <Grid2 size={{ xs: 12, sm: 4 }}>
               <TextField
-                label="Product Name"
+                label="Search Product"
                 variant="outlined"
                 fullWidth
+                value={searchFilters.name}
+                onChange={(e) => updateSearchFilters("name", e.target.value)}
               ></TextField>
             </Grid2>
 
             <Grid2 size={{ xs: 12, sm: 3 }}>
               <FormControl variant="outlined" fullWidth>
                 <InputLabel>Category</InputLabel>
-                <Select label="Category" defaultValue="">
+                <Select
+                  value={searchFilters.category}
+                  onChange={(e) =>
+                    updateSearchFilters("category", e.target.value)
+                  }
+                  label="Category"
+                >
                   <MenuItem value="">
                     <em>None</em>
                   </MenuItem>
@@ -221,7 +301,13 @@ function Dashboard() {
             <Grid2 size={{ xs: 12, sm: 3 }}>
               <FormControl variant="outlined" fullWidth>
                 <InputLabel>Availibility</InputLabel>
-                <Select label="Availability" defaultValue="">
+                <Select
+                  value={searchFilters.availability}
+                  onChange={(e) =>
+                    updateSearchFilters("availability", e.target.value)
+                  }
+                  label="Availability"
+                >
                   <MenuItem value="">
                     <em>None</em>
                   </MenuItem>
@@ -237,6 +323,7 @@ function Dashboard() {
                 color="primary"
                 fullWidth
                 sx={{ fontWeight: "bold" }}
+                onClick={handleSearch}
               >
                 Search
               </Button>
@@ -332,7 +419,7 @@ function Dashboard() {
             </TableHead>
 
             <TableBody>
-              {inventoryData.map((item, index) => (
+              {paginatedData.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell>
                     <input
@@ -408,7 +495,12 @@ function Dashboard() {
             justifyContent: "center",
           }}
         >
-          <Pagination count={10} color="primary" />
+          <Pagination
+            count={Math.ceil(inventoryData.length / itemsPerPage)}
+            page={currentPage}
+            onChange={handlePageChange}
+            color="primary"
+          />
         </Box>
 
         <Box
