@@ -65,6 +65,30 @@ export const useInventoryStore = create<InventoryState>((set) => ({
             stock: 7,
             checked: false,
         },
+        {
+            category:"Food",
+            name: "Torta de Tamal",
+            price: 5.00,
+            expiration: "2025-03-10",
+            stock: 7,
+            checked: false,
+        },
+        {
+            category:"Food",
+            name: "Torta de Tamal",
+            price: 5.00,
+            expiration: "2025-03-10",
+            stock: 7,
+            checked: false,
+        },
+        {
+            category:"Food",
+            name: "Torta de Tamal",
+            price: 5.00,
+            expiration: "2025-03-10",
+            stock: 7,
+            checked: false,
+        },
     ],
 
     sortInventory: (field) =>
