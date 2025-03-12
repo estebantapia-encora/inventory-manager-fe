@@ -1,20 +1,24 @@
-import Dashboard from "./components/Dashboard";
-import { Box } from "@mui/material";
+import { AppProvider } from "@toolpad/core/AppProvider";
+import Dashboard from "./pages/Dashboard";
+import Box from "@mui/material/Box";
 
 function App() {
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "100vw",
-        bgcolor: "#f5f5f5",
-        overflowY: "auto",
-      }}
-    >
-      <Dashboard />
-    </Box>
+    <AppProvider>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          bgcolor: "#212a33",
+          minHeight: "100vh",
+          width: "100vw",
+        }}
+      >
+        <Dashboard />
+      </Box>
+    </AppProvider>
   );
 }
 

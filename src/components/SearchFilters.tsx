@@ -1,117 +1,106 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
+  MenuItem,
+  TextField,
+  Select,
   FormControl,
   InputLabel,
-  MenuItem,
-  Select,
-  TextField,
   SelectChangeEvent,
 } from "@mui/material";
-import Grid2 from "@mui/material/Grid2";
+import useStore from "../store";
 
-interface SearchFiltersProps {
-  searchFilters: { name: string; category: string; availability: string };
-  updateSearchFilters: (field: string, value: string | string[]) => void;
-  handleSearch: () => void;
-  handleClearSearch: () => void;
-}
+const SearchFilters = () => {
+  const {
+    searchFilters,
+    setSearchFilters,
+    clearSearchFilters,
+    toggleSearchTriggered,
+  } = useStore();
+  const [localFilters, setLocalFilters] = useState(searchFilters);
 
-const SearchFilters: React.FC<SearchFiltersProps> = ({
-  searchFilters,
-  updateSearchFilters,
-  handleSearch,
-  handleClearSearch,
-}) => {
-  const handleCategoryChange = (event: SelectChangeEvent<string>) => {
-    const { value } = event.target;
-    updateSearchFilters("category", value);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setLocalFilters({ ...localFilters, [name]: value });
+  };
+
+  const handleSelectChange = (e: SelectChangeEvent<string>) => {
+    const { name, value } = e.target;
+    setLocalFilters({ ...localFilters, [name as string]: value as string });
+  };
+
+  const handleSearch = () => {
+    setSearchFilters(localFilters); // Ensure filters are updated
+    setTimeout(() => {
+      toggleSearchTriggered(); // Trigger search safely after filters update
+    }, 0);
+  };
+
+  const handleClear = () => {
+    clearSearchFilters();
+    setLocalFilters({
+      name: "",
+      category: "",
+      availability: "",
+    });
+    toggleSearchTriggered(); // Trigger search only once
   };
 
   return (
-    <Box component="form" sx={{ mb: 4 }}>
-      <Grid2 container spacing={2} alignItems="center">
-        <Grid2 size={{ xs: 12, sm: 3 }}>
-          <TextField
-            label="Search Product"
-            variant="outlined"
-            fullWidth
-            value={searchFilters.name}
-            onChange={(e) => updateSearchFilters("name", e.target.value)}
-            sx={{ height: "56px" }}
-          />
-        </Grid2>
-        <Grid2 size={{ xs: 12, sm: 3 }}>
-          <FormControl variant="outlined" fullWidth sx={{ height: "56px" }}>
-            <InputLabel>Category</InputLabel>
-            <Select
-              value={searchFilters.category}
-              onChange={handleCategoryChange}
-              label="Category"
-              MenuProps={{
-                PaperProps: {
-                  sx: {
-                    "& .Mui-selected": {
-                      backgroundColor: "rgba(0, 0, 255, 0.1)", // Light blue background for selected items
-                      "&:hover": {
-                        backgroundColor: "rgba(0, 0, 255, 0.2)", // Darker blue background on hover
-                      },
-                    },
-                  },
-                },
-              }}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value="Food">Food</MenuItem>
-              <MenuItem value="Electronics">Electronics</MenuItem>
-              <MenuItem value="Clothing">Clothing</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid2>
-        <Grid2 size={{ xs: 12, sm: 3 }}>
-          <FormControl variant="outlined" fullWidth sx={{ height: "56px" }}>
-            <InputLabel>Availability</InputLabel>
-            <Select
-              value={searchFilters.availability}
-              onChange={(e) =>
-                updateSearchFilters("availability", e.target.value)
-              }
-              label="Availability"
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value="Available">Available</MenuItem>
-              <MenuItem value="Out of Stock">Out of Stock</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid2>
-        <Grid2 size={{ xs: 12, sm: 2 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{ fontWeight: "bold", height: "56px" }}
-            onClick={handleSearch}
+    <Box sx={{ display: "flex", flexDirection: "column", mb: 2 }}>
+      <Box sx={{ mb: 1 }}>Search products</Box>
+      <Box sx={{ display: "flex", gap: 2 }}>
+        <TextField
+          label="Product Name"
+          name="name"
+          value={localFilters.name}
+          onChange={handleInputChange}
+          variant="outlined"
+          sx={{ width: "200px" }} // Set the width for the Product Name input
+        />
+        <FormControl variant="outlined" sx={{ width: "200px" }}>
+          {" "}
+          {/* Set the same width for Category */}
+          <InputLabel>Category</InputLabel>
+          <Select
+            label="Category"
+            inputProps={{ name: "category" }} // Ensure the name attribute is set
+            value={localFilters.category}
+            onChange={handleSelectChange}
           >
-            Search
-          </Button>
-        </Grid2>
-        <Grid2 size={{ xs: 12, sm: 1 }}>
-          <Button
-            variant="contained"
-            color="secondary"
-            fullWidth
-            sx={{ fontWeight: "bold", height: "56px" }}
-            onClick={handleClearSearch}
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            <MenuItem value="Clothing">Clothing</MenuItem>
+            <MenuItem value="Electronics">Electronics</MenuItem>
+            <MenuItem value="Food">Food</MenuItem>
+          </Select>
+        </FormControl>
+        <FormControl variant="outlined" sx={{ width: "200px" }}>
+          {" "}
+          {/* Set the same width for Availability */}
+          <InputLabel>Availability</InputLabel>
+          <Select
+            label="Availability"
+            inputProps={{ name: "availability" }} // Ensure the name attribute is set
+            value={localFilters.availability}
+            onChange={handleSelectChange}
           >
-            Clear
-          </Button>
-        </Grid2>
-      </Grid2>
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            <MenuItem value="Available">Available</MenuItem>
+            <MenuItem value="Out of Stock">Out of Stock</MenuItem>
+          </Select>
+        </FormControl>
+        <Button variant="contained" color="primary" onClick={handleSearch}>
+          Search
+        </Button>
+        <Button variant="contained" color="secondary" onClick={handleClear}>
+          Clear
+        </Button>
+      </Box>
     </Box>
   );
 };
