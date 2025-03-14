@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import axios from 'axios';
 
 interface Product {
   id: number;
@@ -12,6 +13,7 @@ interface Product {
 
 interface StoreState {
   products: Product[];
+  fetchProducts: () => Promise<void>;
   searchFilters: {
     name: string;
     category: string;
@@ -31,21 +33,17 @@ interface StoreState {
 }
 
 const useStore = create<StoreState>((set, get) => ({
-  products: [
-    { id: 1, name: 'TV', category: 'Electronics', price: 6000, expiration: '', stock: 6, checked: false },
-    { id: 2, name: 'Shirt', category: 'Clothing', price: 50, expiration: '', stock: 9, checked: false },
-    { id: 3, name: 'Cupcake', category: 'Food', price: 30, expiration: '2025-03-15', stock: 16, checked: false },
-    { id: 4, name: 'Pants', category: 'Clothing', price: 400, expiration: '', stock: 3, checked: false },
-    { id: 5, name: 'Gamer PC', category: 'Electronics', price: 8000, expiration: '', stock: 16, checked: false },
-    { id: 6, name: 'Ice cream sandwich', category: 'Food', price: 40, expiration: '2025-04-12', stock: 9, checked: false },
-    { id: 7, name: 'Western Pants', category: 'Clothing', price: 500, expiration: '', stock: 16, checked: false },
-    { id: 8, name: 'Torta de Tamal', category: 'Food', price: 40, expiration: '2025-03-30', stock: 3, checked: false },
-    { id: 9, name: 'Socks', category: 'Clothing', price: 60, expiration: '', stock: 16, checked: false },
-    { id: 10, name: 'Burritos de Machaca', category: 'Food', price: 20, expiration: '2025-03-25', stock: 9, checked: false },
-    { id: 11, name: 'Hat', category: 'Clothing', price: 250, expiration: '', stock: 16, checked: false },
-    { id: 12, name: 'Laptop', category: 'Electronics', price: 6000, expiration: '', stock: 3, checked: false },
-    { id: 13, name: 'Nintendo Switch', category: 'Electronics', price: 6500, expiration: '', stock: 16, checked: false },
-  ],
+  products: [],
+  fetchProducts: async () => {
+    try {
+      const response = await axios.get("http://localhost:9090/inventory/products");
+      set({ products: response.data });
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  },
+
+
   searchFilters: {
     name: '',
     category: '',

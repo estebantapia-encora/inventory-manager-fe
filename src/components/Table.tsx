@@ -28,6 +28,7 @@ import SearchFilters from "./SearchFilters";
 export default function BasicTable() {
   const {
     products,
+    fetchProducts,
     searchFilters,
     toggleChecked,
     addProduct,
@@ -41,6 +42,10 @@ export default function BasicTable() {
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10); // Default: 10 rows per page
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
     const filtered = products.filter((product) => {
@@ -716,10 +721,12 @@ export default function BasicTable() {
                       textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
                     }}
                   >
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                    }).format(product.price)}
+                    {product.price !== undefined && product.price !== null
+                      ? new Intl.NumberFormat("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                        }).format(product.price)
+                      : "N/A"}
                   </TableCell>
                   <TableCell
                     align="left"
