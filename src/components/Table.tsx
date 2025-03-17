@@ -44,8 +44,12 @@ export default function BasicTable() {
   const [rowsPerPage, setRowsPerPage] = useState(10); // Default: 10 rows per page
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    fetchProducts(); // ✅ Fetches products ONLY when component mounts
+  }, []); // ✅ Empty dependency array prevents infinite loop
+
+  useEffect(() => {
+    setFilteredProducts([...products]); // ✅ Updates filteredProducts when products change
+  }, [products]); // ✅ This runs only when `products` is updated
 
   useEffect(() => {
     const filtered = products.filter((product) => {
@@ -165,7 +169,9 @@ export default function BasicTable() {
       category: product.category,
       price: product.price,
       stock: product.stock.toString(),
-      expiration: product.expiration,
+      expiration: product.expiration
+        ? new Date(product.expiration).toISOString().split("T")[0]
+        : "", // Convert to YYYY-MM-DD format,
       checked: product.checked,
     });
     setNewProduct({
@@ -173,7 +179,9 @@ export default function BasicTable() {
       category: product.category,
       price: product.price.toString(),
       stock: product.stock.toString(),
-      expiration: product.expiration,
+      expiration: product.expiration
+        ? new Date(product.expiration).toISOString().split("T")[0]
+        : "", // Convert to YYYY-MM-DD format,
     });
     setEditOpen(true);
   };
@@ -258,13 +266,16 @@ export default function BasicTable() {
 
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
+    fetchProducts(newPage, rowsPerPage); // ✅ Fetch products for the new page
   };
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    const newSize = parseInt(event.target.value, 10);
+    setRowsPerPage(newSize);
     setPage(0);
+    fetchProducts(0, newSize); // ✅ Fetch first page with new size
   };
 
   const isSaveDisabled =
@@ -685,8 +696,9 @@ export default function BasicTable() {
                       textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
                     }}
                   >
-                    {product.category}
+                    {product.category || "N/A"}
                   </TableCell>
+
                   <TableCell
                     align="left"
                     sx={{
@@ -703,8 +715,9 @@ export default function BasicTable() {
                       textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
                     }}
                   >
-                    {product.name}
+                    {product.name || "N/A"}
                   </TableCell>
+
                   <TableCell
                     align="left"
                     sx={{
@@ -721,13 +734,14 @@ export default function BasicTable() {
                       textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
                     }}
                   >
-                    {product.price !== undefined && product.price !== null
+                    {product.price != null && !isNaN(product.price)
                       ? new Intl.NumberFormat("en-US", {
                           style: "currency",
                           currency: "USD",
                         }).format(product.price)
                       : "N/A"}
                   </TableCell>
+
                   <TableCell
                     align="left"
                     sx={{
@@ -744,14 +758,19 @@ export default function BasicTable() {
                       textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
                     }}
                   >
-                    {product.expiration}{" "}
-                    {product.category === "Food" && (
+                    {product.expiration
+                      ? new Date(product.expiration).toLocaleDateString(
+                          "en-US",
+                          { year: "numeric", month: "long", day: "numeric" }
+                        )
+                      : "N/A"}
+                    {product.category === "Food" && product.expiration && (
                       <Typography
                         variant="body2"
                         component="span"
                         sx={{
                           fontStyle: "italic",
-                          fontSize: "1rem",
+                          fontSize: "0.9rem",
                           color: "rgb(37, 20, 20)",
                         }}
                       >
@@ -759,6 +778,7 @@ export default function BasicTable() {
                       </Typography>
                     )}
                   </TableCell>
+
                   <TableCell
                     align="left"
                     sx={{
@@ -770,8 +790,9 @@ export default function BasicTable() {
                       textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
                     }}
                   >
-                    {product.stock}
+                    {product.stock != null ? product.stock : "N/A"}
                   </TableCell>
+
                   <TableCell
                     align="left"
                     sx={{
