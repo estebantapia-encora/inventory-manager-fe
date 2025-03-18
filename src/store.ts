@@ -13,6 +13,7 @@ interface Product {
 
 interface StoreState {
   products: Product[];
+  
   totalPages: number;
   totalProducts: number;
   currentPage: number;
@@ -27,7 +28,7 @@ interface StoreState {
   setSearchFilters: (filters: Partial<StoreState["searchFilters"]>) => void;
   clearSearchFilters: () => void;
   toggleSearchTriggered: () => void;
-  toggleChecked: (id: number) => void;
+  toggleChecked: (id: number, checked: boolean) => void; 
   addProduct: (product: Omit<Product, "id" | "checked">) => void;
   editProduct: (id: number, updatedProduct: Omit<Product, "id" | "checked">) => void;
   deleteProduct: (id: number) => void;
@@ -76,23 +77,31 @@ const useStore = create<StoreState>((set, get) => ({
     }
   },
   
+
+  toggleChecked: async (id: number, checked: boolean) => {
+    try {
+      const baseUrl = "http://localhost:9090"; // ✅ Ensure the correct backend URL
+      const endpoint = checked
+        ? `${baseUrl}/inventory/products/${id}/outofstock`
+        : `${baseUrl}/inventory/products/${id}/instock`;
   
-
-  toggleChecked: (id) => set((state) => {
-    const prevState = state.checkedState.get(id) || { checked: false, stock: 10 }; // Default state
-
-    const newChecked = !prevState.checked; // ✅ Toggle state
-    const newStock = newChecked ? 0 : 10;  // ✅ Correct stock update
-
-    const updatedProducts = state.products.map((product) => 
-      product.id === id ? { ...product, checked: newChecked, stock: newStock } : product
-    );
-
-    return {
-      products: updatedProducts,
-      checkedState: new Map(state.checkedState).set(id, { checked: newChecked, stock: newStock }), // ✅ Persist state
-    };
-  }),
+      const response = await fetch(endpoint, { method: checked ? "POST" : "PUT" });
+  
+      if (!response.ok) {
+        throw new Error(`❌ Backend request failed with status ${response.status}`);
+      }
+  
+      console.log(`✅ Stock successfully updated for product ${id}`);
+  
+      // ✅ Ensure UI refreshes by fetching updated products
+      await get().fetchProducts();
+  
+    } catch (error) {
+      console.error("❌ Error updating stock status:", error);
+    }
+  },
+  
+  
 
   searchFilters: {
     name: '',
@@ -122,12 +131,14 @@ const useStore = create<StoreState>((set, get) => ({
     products: [...state.products, { ...product, id: Date.now(), checked: false }],
   })),
 
+
   editProduct: async (id, updatedProduct) => {
     try {
         const formattedProduct = {
             ...updatedProduct,
             unitPrice: updatedProduct.price, // ✅ Fix naming issue
-            quantityInStock: updatedProduct.stock // ✅ Fix naming issue
+            quantityInStock: updatedProduct.stock, // ✅ Fix naming issue
+            expirationDate: updatedProduct.expiration || null, // ✅ Correct field name
         };
 
         console.log(`🔄 Sending update request for product ID ${id}`, formattedProduct);
@@ -154,8 +165,7 @@ const useStore = create<StoreState>((set, get) => ({
     }
 },
 
-  
-  
+
 deleteProduct: async (id) => {
   try {
     console.log(`🗑️ Sending delete request for product ID ${id}`);

@@ -236,7 +236,10 @@ export default function BasicTable() {
         name: newProduct.name,
         category: newProduct.category,
         price: parseFloat(newProduct.price),
-        expiration: newProduct.category === "Food" ? newProduct.expiration : "",
+        expiration:
+          newProduct.category === "Food" && newProduct.expiration
+            ? newProduct.expiration
+            : currentProduct.expiration, // ✅ Preserve expiration date if not provided
         stock: parseInt(newProduct.stock, 10),
       });
     }
@@ -660,7 +663,8 @@ export default function BasicTable() {
                 <TableRow
                   key={product.id}
                   sx={{
-                    textDecoration: product.checked ? "line-through" : "none",
+                    textDecoration:
+                      product.stock === 0 ? "line-through" : "none",
                     fontSize: "1rem",
                   }}
                 >
@@ -672,8 +676,10 @@ export default function BasicTable() {
                     }}
                   >
                     <Checkbox
-                      checked={product.checked}
-                      onChange={() => toggleChecked(product.id)}
+                      checked={product.stock === 0}
+                      onChange={() =>
+                        toggleChecked(product.id, product.stock !== 0)
+                      }
                       aria-label="controlled"
                     />
                   </TableCell>
