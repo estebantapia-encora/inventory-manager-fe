@@ -55,6 +55,7 @@ export default function BasicTable() {
   }, [products]); // ✅ This runs only when `products` is updated
 
   useEffect(() => {
+    // ✅ Apply filtering FIRST before pagination
     const filtered = products.filter((product) => {
       const matchesName = product.name
         .toLowerCase()
@@ -71,6 +72,7 @@ export default function BasicTable() {
       return matchesName && matchesCategory && matchesAvailability;
     });
 
+    // ✅ Sorting (applied to filtered results)
     const sorted = filtered.sort((a, b) => {
       let comparison = 0;
       if (sortCriteria) {
@@ -106,12 +108,18 @@ export default function BasicTable() {
       return sortOrder === "asc" ? comparison : -comparison;
     });
 
+    // ✅ Update filtered products AFTER filtering and sorting
     setFilteredProducts(sorted);
 
-    // Ensure the page remains valid after filtering and sorting
-    const maxPage = Math.max(0, Math.ceil(sorted.length / rowsPerPage) - 1);
-    if (page > maxPage) {
-      setPage(maxPage);
+    // ✅ Compute total pages AFTER filtering
+    const computedTotalPages = Math.max(
+      1,
+      Math.ceil(sorted.length / rowsPerPage)
+    );
+
+    // ✅ If current page is higher than available pages, reset it
+    if (page > computedTotalPages - 1) {
+      setPage(0); // ✅ Always reset to first page when filtering
     }
   }, [
     products,
@@ -120,7 +128,7 @@ export default function BasicTable() {
     secondarySortCriteria,
     sortOrder,
     rowsPerPage,
-    page,
+    page, // ✅ Now correctly included in dependencies
   ]);
 
   const [open, setOpen] = useState(false);

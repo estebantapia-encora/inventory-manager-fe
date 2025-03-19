@@ -30,10 +30,16 @@ const SearchFilters = () => {
     setLocalFilters({ ...localFilters, [name as string]: value as string });
   };
 
+  const { fetchProducts } = useStore(); // ✅ Access from Zustand
+
   const handleSearch = () => {
-    setSearchFilters(localFilters); // Ensure filters are updated
+    setSearchFilters(localFilters); // ✅ Apply filters
+
+    // ✅ Fetch all products before filtering
+    fetchProducts(0, 1000); // 🚀 Fetch large dataset (fixes search scope)
+
     setTimeout(() => {
-      toggleSearchTriggered(); // Trigger search safely after filters update
+      toggleSearchTriggered(); // ✅ Ensure UI updates correctly
     }, 0);
   };
 
@@ -44,7 +50,12 @@ const SearchFilters = () => {
       category: "",
       availability: "",
     });
-    toggleSearchTriggered(); // Trigger search only once
+
+    fetchProducts(0, 10); // ✅ Refetch the first page with default pagination
+
+    setTimeout(() => {
+      toggleSearchTriggered(); // ✅ Ensure search updates correctly
+    }, 0);
   };
 
   return (
