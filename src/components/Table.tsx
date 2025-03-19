@@ -47,8 +47,8 @@ export default function BasicTable() {
   const [rowsPerPage, setRowsPerPage] = useState(10); // Default: 10 rows per page
 
   useEffect(() => {
-    fetchProducts(currentPage, rowsPerPage); // ✅ Uses Zustand's currentPage & rowsPerPage
-  }, [currentPage, rowsPerPage]); // ✅ Re-fetches when page or rows per page change
+    fetchProducts(currentPage, rowsPerPage, sortCriteria, sortOrder);
+  }, [currentPage, rowsPerPage, sortCriteria, sortOrder]);
 
   useEffect(() => {
     setFilteredProducts([...products]); // ✅ Updates filteredProducts when products change

@@ -48,10 +48,17 @@ const useStore = create<StoreState>((set, get) => ({
   checkedState: new Map<number, { checked: boolean; stock: number }>(), // ✅ Stores checked + stock
 
   fetchProducts: async (page = 0, size = 10, sortBy = "category", sortOrder = "asc") => {
+    
     try {
       const response = await axios.get(`http://localhost:9090/inventory/products`, {
-        params: { page, size, sortBy, sortOrder }
+        params: { 
+          page, 
+          size, 
+          sortBy: sortBy || get().sortBy,   // ✅ Uses Zustand store default if not provided
+          sortOrder: sortOrder || get().sortOrder // ✅ Uses Zustand store default if not provided
+        }
       });
+
       const fetchedProducts = response.data.products.map((product: any) => ({
         id: product.id,
         name: product.name,
