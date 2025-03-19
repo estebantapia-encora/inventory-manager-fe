@@ -28,9 +28,12 @@ import SearchFilters from "./SearchFilters";
 export default function BasicTable() {
   const {
     products,
+    totalProducts,
+    totalPages,
     fetchProducts,
     searchFilters,
     toggleChecked,
+    currentPage,
     addProduct,
     editProduct,
     deleteProduct,
@@ -44,8 +47,8 @@ export default function BasicTable() {
   const [rowsPerPage, setRowsPerPage] = useState(10); // Default: 10 rows per page
 
   useEffect(() => {
-    fetchProducts(); // ✅ Fetches products ONLY when component mounts
-  }, []); // ✅ Empty dependency array prevents infinite loop
+    fetchProducts(currentPage, rowsPerPage); // ✅ Uses Zustand's currentPage & rowsPerPage
+  }, [currentPage, rowsPerPage]); // ✅ Re-fetches when page or rows per page change
 
   useEffect(() => {
     setFilteredProducts([...products]); // ✅ Updates filteredProducts when products change
@@ -268,8 +271,8 @@ export default function BasicTable() {
   };
 
   const handleChangePage = (_: unknown, newPage: number) => {
-    setPage(newPage);
-    fetchProducts(newPage, rowsPerPage); // ✅ Fetch products for the new page
+    setPage(newPage); // ✅ Updates state
+    fetchProducts(newPage, rowsPerPage); // ✅ Fetch correct page
   };
 
   const handleChangeRowsPerPage = (
@@ -277,8 +280,7 @@ export default function BasicTable() {
   ) => {
     const newSize = parseInt(event.target.value, 10);
     setRowsPerPage(newSize);
-    setPage(0);
-    fetchProducts(0, newSize); // ✅ Fetch first page with new size
+    setPage(0); // ✅ Reset to page 0 when changing page size
   };
 
   const isSaveDisabled =
@@ -594,6 +596,7 @@ export default function BasicTable() {
               >
                 Select
               </TableCell>
+
               <TableCell
                 align="left"
                 sx={{
@@ -604,6 +607,7 @@ export default function BasicTable() {
               >
                 Category
               </TableCell>
+
               <TableCell
                 align="left"
                 sx={{
@@ -614,6 +618,7 @@ export default function BasicTable() {
               >
                 Name
               </TableCell>
+
               <TableCell
                 align="left"
                 sx={{
@@ -624,6 +629,7 @@ export default function BasicTable() {
               >
                 Price
               </TableCell>
+
               <TableCell
                 align="left"
                 sx={{
@@ -634,6 +640,7 @@ export default function BasicTable() {
               >
                 Expiration Date
               </TableCell>
+
               <TableCell
                 align="left"
                 sx={{
@@ -644,6 +651,7 @@ export default function BasicTable() {
               >
                 Stock
               </TableCell>
+
               <TableCell
                 align="left"
                 sx={{
@@ -844,18 +852,15 @@ export default function BasicTable() {
           }}
           rowsPerPageOptions={[10]}
           component="div"
-          count={products.length}
+          count={totalProducts ?? 0} // ✅ Ensure default value to prevent errors
           rowsPerPage={rowsPerPage}
-          page={page}
+          page={currentPage} // ✅ Use currentPage from store
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          labelDisplayedRows={({
-            count,
-            page,
-          }: {
-            count: number;
-            page: number;
-          }) => `${page + 1} of ${Math.ceil(count / rowsPerPage)}`}
+          labelDisplayedRows={({ page }: { page: number }) =>
+            `${page + 1} of ${totalPages ?? 1}`
+          }
+          // ✅ Ensure valid totalPages
           labelRowsPerPage=""
         />
       </TableContainer>

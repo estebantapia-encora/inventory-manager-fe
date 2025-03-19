@@ -13,12 +13,13 @@ interface Product {
 
 interface StoreState {
   products: Product[];
-  
-  totalPages: number;
   totalProducts: number;
+  totalPages: number;
   currentPage: number;
+  sortBy: string;
+  sortOrder:string;
   checkedState: Map<number, { checked: boolean; stock: number }>;
-  fetchProducts: (page?: number, size?: number) => Promise<void>;
+  fetchProducts: (page?: number, size?: number, sortBy?: string, sortOrder?: string) => Promise<void>;
   searchFilters: {
     name: string;
     category: string;
@@ -42,12 +43,15 @@ const useStore = create<StoreState>((set, get) => ({
   totalPages: 1,
   totalProducts: 0,
   currentPage: 0,
+  sortBy:"category",
+  sortOrder:"asc",
   checkedState: new Map<number, { checked: boolean; stock: number }>(), // ✅ Stores checked + stock
 
-  fetchProducts: async (page = 0, size = 10) => {
+  fetchProducts: async (page = 0, size = 10, sortBy = "category", sortOrder = "asc") => {
     try {
-      const response = await axios.get(`http://localhost:9090/inventory/products?page=${page}&size=${size}`);
-      
+      const response = await axios.get(`http://localhost:9090/inventory/products`, {
+        params: { page, size, sortBy, sortOrder }
+      });
       const fetchedProducts = response.data.products.map((product: any) => ({
         id: product.id,
         name: product.name,
@@ -57,25 +61,29 @@ const useStore = create<StoreState>((set, get) => ({
         stock: product.quantityInStock ?? null,
       }));
   
-      // Merge state updates to prevent overwriting changes
-      set((state) => {
-        const existingProducts = new Map(state.products.map((p) => [p.id, p]));
-  
-        const updatedProducts = fetchedProducts.map((product:any) =>
-          existingProducts.has(product.id) ? { ...existingProducts.get(product.id), ...product } : product
-        );
-  
-        return {
-          products: updatedProducts,
-          totalPages: response.data.totalPages,
-          totalProducts: response.data.totalProducts,
-          currentPage: page,
-        };
-      });
+      set((state) => ({
+        ...state,
+        products: fetchedProducts, // ✅ Reset the product list with new data
+        totalPages: response.data.totalPages, // ✅ Store total pages from backend
+        totalProducts: response.data.totalProducts, // ✅ Store total products from backend
+        currentPage: page, // ✅ Ensure current page is updated
+
+        sortBy,
+        sortOrder,
+
+        // Preserve existing functions
+        fetchProducts: state.fetchProducts, // ✅ Ensure fetchProducts remains accessible
+        toggleChecked: state.toggleChecked, // ✅ Keep existing function for marking products out of stock
+        addProduct: state.addProduct, // ✅ Keep existing function for adding a product
+        editProduct: state.editProduct, // ✅ Keep existing function for editing a product
+        deleteProduct: state.deleteProduct, // ✅ Keep existing function for deleting a product
+        searchFilters: state.searchFilters, // ✅ Preserve search filters state
+      }));
     } catch (error) {
       console.error("Error fetching products:", error);
     }
   },
+  
   
 
   toggleChecked: async (id: number, checked: boolean) => {
