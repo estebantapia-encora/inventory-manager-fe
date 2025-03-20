@@ -27,6 +27,7 @@ An Inventory Management System built with React, MaterialUI and Zustand.
 
 ## Tech Stack
 - **Frontend:** React, TypeScript, Zustand (State Management), Material UI, Vite.
+- **HTTP Requests:** Axios (API communication with backend)
 - **Backend:** Java, Spring Boot ([Backend Repository](https://github.com/estebantapia-encora/inventory-manager-be)).
 
 ## Installation
