@@ -18,6 +18,10 @@ interface StoreState {
   currentPage: number;
   sortBy: string;
   sortOrder:string;
+  totalStock: number;
+  totalValue: number;
+  categoryStock: Record<string, number>; // ✅ Add this
+  categoryValue: Record<string, number>;
   checkedState: Map<number, { checked: boolean; stock: number }>;
   fetchProducts: (page?: number, size?: number, sortBy?: string, sortOrder?: string) => Promise<void>;
   searchFilters: {
@@ -33,22 +37,22 @@ interface StoreState {
   addProduct: (product: Omit<Product, "id" | "checked">) => void;
   editProduct: (id: number, updatedProduct: Omit<Product, "id" | "checked">) => void;
   deleteProduct: (id: number) => void;
-  getTotalProductsInStock: (category: string) => number;
-  getTotalValueInStock: (category: string) => number;
-  getAveragePriceInStock: (category: string) => number;
 }
 
 const useStore = create<StoreState>((set, get) => ({
   products: [],
   totalPages: 1,
   totalProducts: 0,
+  totalStock: 0,
+  totalValue: 0,
+  categoryStock: {},
+  categoryValue: {},
   currentPage: 0,
   sortBy:"category",
   sortOrder:"asc",
   checkedState: new Map<number, { checked: boolean; stock: number }>(), // ✅ Stores checked + stock
 
-  fetchProducts: async (page = 0, size = 10, sortBy = "category", sortOrder = "asc") => {
-    
+  fetchProducts: async (page = get().currentPage, size = 10, sortBy = "category", sortOrder = "asc") => {    
     try {
       const response = await axios.get(`http://localhost:9090/inventory/products`, {
         params: { 
@@ -68,13 +72,17 @@ const useStore = create<StoreState>((set, get) => ({
         stock: product.quantityInStock ?? null,
       }));
   
+      // Update state with the new fetched data
       set((state) => ({
-        ...state,
-        products: fetchedProducts, // ✅ Reset the product list with new data
-        totalPages: response.data.totalPages, // ✅ Store total pages from backend
-        totalProducts: response.data.totalProducts, // ✅ Store total products from backend
-        currentPage: page, // ✅ Ensure current page is updated
-
+        ...state,  // ✅ Keeps all existing functions automatically
+        products: fetchedProducts,  // ✅ Replace with new data
+        totalPages: response.data.totalPages,
+        totalProducts: response.data.totalProducts,
+        totalStock: response.data.totalStock || state.totalStock,  // ✅ Prevents reset on new pages
+        totalValue: response.data.totalValue || state.totalValue,
+        categoryStock: response.data.categoryStock || {}, // ✅ Store full category-wise stock
+        categoryValue: response.data.categoryValue || {},
+        currentPage: page,  // ✅ Ensure current page is updated
         sortBy,
         sortOrder,
 
@@ -86,13 +94,17 @@ const useStore = create<StoreState>((set, get) => ({
         deleteProduct: state.deleteProduct, // ✅ Keep existing function for deleting a product
         searchFilters: state.searchFilters, // ✅ Preserve search filters state
       }));
+
+      console.log("✅ categoryStock: ", response.data.categoryStock);
+      console.log("✅ categoryValue: ", response.data.categoryValue);
+      console.log("✅ Fetched products:", fetchedProducts); 
+
     } catch (error) {
       console.error("Error fetching products:", error);
     }
   },
   
   
-
   toggleChecked: async (id: number, checked: boolean) => {
     try {
       const baseUrl = "http://localhost:9090"; // ✅ Ensure the correct backend URL
@@ -109,7 +121,7 @@ const useStore = create<StoreState>((set, get) => ({
       console.log(`✅ Stock successfully updated for product ${id}`);
   
       // ✅ Ensure UI refreshes by fetching updated products
-      await get().fetchProducts();
+      await get().fetchProducts(get().currentPage); // ✅ Keep current page
   
     } catch (error) {
       console.error("❌ Error updating stock status:", error);
@@ -117,7 +129,6 @@ const useStore = create<StoreState>((set, get) => ({
   },
   
   
-
   searchFilters: {
     name: '',
     category: '',
@@ -142,70 +153,97 @@ const useStore = create<StoreState>((set, get) => ({
     isSearchTriggered: !state.isSearchTriggered,
   })),
 
-  addProduct: (product) => set((state) => ({
-    products: [...state.products, { ...product, id: Date.now(), checked: false }],
-  })),
+  
+  addProduct: async (product) => {
+    try {
+      const formattedProduct = {
+        name: product.name,
+        category: product.category,
+        unitPrice: product.price, // ✅ Match backend naming
+        expirationDate: product.expiration, // ✅ Match backend naming
+        quantityInStock: product.stock, // ✅ Match backend naming
+      };
+  
+      console.log("🆕 Sending request to add new product:", formattedProduct);
+  
+      const response = await axios.post(
+        "http://localhost:9090/inventory/products",
+        formattedProduct
+      );
+  
+      if (response.status === 200 || response.status === 201) {
+        console.log("✅ Product added successfully, updating Zustand state");
+  
+        // Fetch latest products from backend
+        await get().fetchProducts();
+      } else {
+        console.error("❌ Failed to add product, status:", response.status);
+      }
+    } catch (error) {
+      console.error("❌ Error adding product:", error);
+    }
+  },
+  
 
 
   editProduct: async (id, updatedProduct) => {
     try {
-        const formattedProduct = {
-            ...updatedProduct,
-            unitPrice: updatedProduct.price, // ✅ Fix naming issue
-            quantityInStock: updatedProduct.stock, // ✅ Fix naming issue
-            expirationDate: updatedProduct.expiration || null, // ✅ Correct field name
-        };
-
-        console.log(`🔄 Sending update request for product ID ${id}`, formattedProduct);
-
-        const response = await axios.put(`http://localhost:9090/inventory/products/${id}`, formattedProduct);
-
-        if (response.status === 200) {
-            console.log("✅ Edit successful, updating Zustand state");
-
-            set((state) => ({
-                products: state.products.map((product) =>
-                    product.id === id ? { ...product, ...updatedProduct } : product
-                ),
-            }));
-
-            console.log("📥 Fetching latest products after update...");
-            await get().fetchProducts(); // ✅ Ensure latest data is fetched
-        } else {
-            console.error("❌ Edit failed with status:", response.status);
-        }
+      const formattedProduct = {
+        ...updatedProduct,
+        unitPrice: updatedProduct.price, // ✅ Fix naming issue
+        quantityInStock: updatedProduct.stock, // ✅ Fix naming issue
+        expirationDate: updatedProduct.expiration || null, // ✅ Correct field name
+      };
+  
+      console.log(`🔄 Sending update request for product ID ${id}`, formattedProduct);
+  
+      const response = await axios.put(`http://localhost:9090/inventory/products/${id}`, formattedProduct);
+  
+      if (response.status === 200) {
+        console.log("✅ Edit successful, updating Zustand state");
+  
+        set((state) => ({
+          products: state.products.map((product) =>
+            product.id === id ? { ...product, ...updatedProduct } : product
+          ),
+        }));
+  
+        console.log("📥 Fetching latest products after update...");
+        await get().fetchProducts(get().currentPage); // ✅ Keep current page
+      } else {
+        console.error("❌ Edit failed with status:", response.status);
+      }
     } catch (error) {
-        console.error("❌ Error editing product:", error);
-        get().fetchProducts(); // ✅ Restore latest backend state if error
+      console.error("❌ Error editing product:", error);
+      get().fetchProducts(get().currentPage); // ✅ Restore latest backend state if error
     }
-},
+  },
+  
 
-
-deleteProduct: async (id) => {
-  try {
-    console.log(`🗑️ Sending delete request for product ID ${id}`);
-
-    const response = await axios.delete(`http://localhost:9090/inventory/products/${id}`);
-
-    if (response.status === 200 || response.status === 204) { 
-      console.log("✅ Delete successful, updating Zustand state");
-
-      set((state) => ({
-        products: state.products.filter((product) => product.id !== id),
-      }));
-
-      console.log("📥 Fetching latest products after delete...");
-      await get().fetchProducts(); // ✅ Ensure latest data is fetched
-    } else {
-      console.error("❌ Delete failed with status:", response.status);
+  deleteProduct: async (id) => {
+    try {
+      console.log(`🗑️ Sending delete request for product ID ${id}`);
+  
+      const response = await axios.delete(`http://localhost:9090/inventory/products/${id}`);
+  
+      if (response.status === 200 || response.status === 204) { 
+        console.log("✅ Delete successful, updating Zustand state");
+  
+        set((state) => ({
+          products: state.products.filter((product) => product.id !== id),
+        }));
+  
+        console.log("📥 Fetching latest products after delete...");
+        await get().fetchProducts(get().currentPage); // ✅ Keep current page
+      } else {
+        console.error("❌ Delete failed with status:", response.status);
+      }
+    } catch (error) {
+      console.error("❌ Error deleting product:", error);
+      get().fetchProducts(get().currentPage); // ✅ Keep current page even on error
     }
-  } catch (error) {
-    console.error("❌ Error deleting product:", error);
-    get().fetchProducts(); // ✅ Restore latest backend state if error
-  }
-},
-  
-  
+  },
+
 
   getTotalProductsInStock: (category: string) => {
     const products = get().products.filter(
