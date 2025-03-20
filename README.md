@@ -17,9 +17,11 @@ An Inventory Management System built with React, MaterialUI and Zustand.
 - **Stock Control:**
   - Mark products as "Out of Stock".
   - Unchecking the "Out of Stock" box restores stock to **10** by default.
+    
 - **Filtering & Sorting:**
   - Filter products by **name, category, and availability**.
   - **Two-column sorting** (Sort by multiple attributes).
+    
 - **Pagination Support:** 10 products per page.
 - **User Interface:** Styled with **Material UI**.
 
@@ -41,7 +43,7 @@ The application will be available at http://localhost:8080/.
 - Clone and start the Backend Repository (https://github.com/estebantapia-encora/inventory-manager-be)
 - The Frontend will consume the backend API at http://localhost:9090/inventory/products/.
 
-## API Endpoints used by the Frontend
+## API Endpoints
 | METHOD  | ENDPOINT                     | DESCRIPTION                      |
 |---------|------------------------------|----------------------------------|
 | **GET**  | `/products`                   | Fetch all products               |
