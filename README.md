@@ -58,4 +58,6 @@ METHOD |          ENDPOINT         |            DESCRIPTION            |
  - npm run build
 
  ## License
- This project is licensed under the MIT License. https://opensource.org/license/mit
+This project is licensed under the MIT License.
+https://github.com/estebantapia-encora/inventory-manager-fe/blob/frontend-main/LICENSE
+For more information on the MIT license, go to: https://opensource.org/license/mit
