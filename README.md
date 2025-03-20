@@ -1,16 +1,17 @@
 # Inventory Manager - Frontend
 
 An Inventory Management System built with React, MaterialUI and Zustand.
-## Table of Contents
-- Features
-- Tech Stack
-- Installation
-- Connecting to the Backend
-- API Endpoints
-- Running Tests
-- Deployment
-- License
+## **Table of Contents**
 
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Connecting to the Backend](#connecting-to-the-backend)
+- [API Endpoints](#api-endpoints)
+- [Running Tests](#running-tests)
+- [Install Dependencies](#install-dependencies)
+- [Deployment](#deployment)
+- [License](#license)
 
 ## Features
 - **Product Management:** Add, edit, delete, and search for products.
@@ -55,12 +56,11 @@ The application will be available at http://localhost:8080/.
 | **POST** | `/products/{id}/outofstock`    | Mark a product as "out of stock" |
 
 
-## Running Tests - To run unit tests for the frontend
- - npm run test
+## Running Tests 
+- To run unit tests for the frontend: npm run test
 
-## Install Dependencies
- #Deployment - To build and deploy the frontend
- - npm run build
+## Deployment
+- To build and deploy the frontend: npm run build
 
  ## License
 This project is licensed under the MIT License.
