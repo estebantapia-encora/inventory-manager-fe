@@ -258,6 +258,7 @@ export default function BasicTable() {
       expiration: expiration,
       stock: stock, // Ensure the correct value is passed
     });
+
     fetchProducts(); // Ensure the inventory updates after adding a new product
     handleClose();
   };

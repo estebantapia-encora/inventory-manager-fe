@@ -1,4 +1,5 @@
 import useStore from "../store";
+import { useEffect } from "react";
 import {
   Box,
   Table,
@@ -17,9 +18,14 @@ const InventoryMetrics = () => {
     totalValue,
     categoryStock = {},
     categoryValue = {},
+    fetchProducts,
   } = useStore();
 
   const categories = ["Food", "Clothing", "Electronics", "Overall"];
+
+  useEffect(() => {
+    fetchProducts();
+  }, [totalStock]);
 
   const getCategoryStock = (category: string) =>
     category === "Overall" ? totalStock : (categoryStock[category] ?? 0);

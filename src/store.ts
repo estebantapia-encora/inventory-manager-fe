@@ -120,6 +120,24 @@ const useStore = create<StoreState>((set, get) => ({
   
       console.log(`✅ Stock successfully updated for product ${id}`);
   
+      set((state) => {
+        const updatedProducts = state.products.map((product) =>
+          product.id === id ? { ...product, stock: checked ? 0 : 10 } : product
+        );
+  
+        // 🔹 Recalculate total stock and value
+        const newTotalStock = updatedProducts.reduce((sum, p) => sum + p.stock, 0);
+        const newTotalValue = updatedProducts.reduce((sum, p) => sum + p.price * p.stock, 0);
+  
+        return {
+          products: updatedProducts,
+          totalStock: newTotalStock,
+          totalValue: newTotalValue,
+        };
+      });
+  
+
+
       // ✅ Ensure UI refreshes by fetching updated products
       await get().fetchProducts(get().currentPage); // ✅ Keep current page
   
