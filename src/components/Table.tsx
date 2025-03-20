@@ -37,6 +37,7 @@ export default function BasicTable() {
     addProduct,
     editProduct,
     deleteProduct,
+    isLoading,
   } = useStore();
   const [filteredProducts, setFilteredProducts] = useState(products);
   const [sortCriteria, setSortCriteria] = useState(""); // Default sorting by none
@@ -355,555 +356,565 @@ export default function BasicTable() {
   };
 
   return (
-    <>
-      <SearchFilters />
+    <div>
+      {isLoading ? (
+        <p>Loading Products</p>
+      ) : (
+        <>
+          <SearchFilters />
 
-      <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
-        <FormControl variant="outlined" sx={{ width: "200px" }}>
-          <InputLabel>Sort By</InputLabel>
-          <Select
-            label="Sort By"
-            value={sortCriteria}
-            onChange={(e) => setSortCriteria(e.target.value)}
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            <MenuItem value="category">Category</MenuItem>
-            <MenuItem value="name">Name</MenuItem>
-            <MenuItem value="price">Price</MenuItem>
-            <MenuItem value="expiration">Expiration Date</MenuItem>
-            <MenuItem value="stock">Stock</MenuItem>
-          </Select>
-        </FormControl>
-
-        <FormControl
-          variant="outlined"
-          sx={{ width: "200px" }}
-          disabled={!sortCriteria} // Disable if "Sort By" has no selection
-        >
-          <InputLabel>And</InputLabel>
-          <Select
-            label="And"
-            value={secondarySortCriteria}
-            onChange={(e) => setSecondarySortCriteria(e.target.value)}
-            sx={{
-              "&.Mui-disabled": {
-                borderColor: "transparent", // Remove white border effect when hovering
-                color: "rgba(0, 0, 0, 0.38)", // Match MUI's disabled color
-              },
-            }}
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            {["category", "name", "price", "expiration", "stock"]
-              .filter((option) => option !== sortCriteria) // Prevent duplicate sorting criteria
-              .map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option.charAt(0).toUpperCase() + option.slice(1)}
+          <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+            <FormControl variant="outlined" sx={{ width: "200px" }}>
+              <InputLabel>Sort By</InputLabel>
+              <Select
+                label="Sort By"
+                value={sortCriteria}
+                onChange={(e) => setSortCriteria(e.target.value)}
+              >
+                <MenuItem value="">
+                  <em>None</em>
                 </MenuItem>
-              ))}
-          </Select>
-        </FormControl>
+                <MenuItem value="category">Category</MenuItem>
+                <MenuItem value="name">Name</MenuItem>
+                <MenuItem value="price">Price</MenuItem>
+                <MenuItem value="expiration">Expiration Date</MenuItem>
+                <MenuItem value="stock">Stock</MenuItem>
+              </Select>
+            </FormControl>
 
-        <FormControl
-          variant="outlined"
-          sx={{ width: "200px" }}
-          disabled={!sortCriteria}
-        >
-          <InputLabel>Order</InputLabel>
-          <Select
-            label="Order"
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
-          >
-            <MenuItem value="asc">Ascending</MenuItem>
-            <MenuItem value="desc">Descending</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
-      <Button
-        variant="contained"
-        color="warning"
-        onClick={handleOpen}
-        sx={{ marginBottom: 2, width: 170, fontSize: "1rem" }}
-      >
-        Add Product
-      </Button>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle sx={{ fontSize: "1.2rem" }}>Add New Product</DialogTitle>
-        <DialogContent>
-          <Select
-            value={newProduct.category}
-            onChange={handleSelectChange}
-            displayEmpty
-            sx={{ marginBottom: 2, fontSize: "1rem" }}
-          >
-            <MenuItem value="" disabled>
-              Select Category
-            </MenuItem>
-            <MenuItem value="Clothing">Clothing</MenuItem>
-            <MenuItem value="Electronics">Electronics</MenuItem>
-            <MenuItem value="Food">Food</MenuItem>
-          </Select>
-          <TextField
-            autoFocus
-            name="name"
-            label="Name"
-            type="text"
-            fullWidth
-            value={newProduct.name}
-            onChange={handleChange}
-            sx={{ marginBottom: 2, fontSize: "1.2rem" }}
-          />
+            <FormControl
+              variant="outlined"
+              sx={{ width: "200px" }}
+              disabled={!sortCriteria} // Disable if "Sort By" has no selection
+            >
+              <InputLabel>And</InputLabel>
+              <Select
+                label="And"
+                value={secondarySortCriteria}
+                onChange={(e) => setSecondarySortCriteria(e.target.value)}
+                sx={{
+                  "&.Mui-disabled": {
+                    borderColor: "transparent", // Remove white border effect when hovering
+                    color: "rgba(0, 0, 0, 0.38)", // Match MUI's disabled color
+                  },
+                }}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {["category", "name", "price", "expiration", "stock"]
+                  .filter((option) => option !== sortCriteria) // Prevent duplicate sorting criteria
+                  .map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option.charAt(0).toUpperCase() + option.slice(1)}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
 
-          <TextField
-            name="price"
-            label="Price"
-            type="number"
-            fullWidth
-            value={newProduct.price}
-            onChange={handleChange}
-            sx={{ marginBottom: 2, fontSize: "1.2rem" }}
-            inputProps={{ min: 0 }}
-          />
-
-          {newProduct.category === "Food" && (
-            <TextField
-              name="expiration"
-              label="Expiration Date"
-              type="date"
-              fullWidth
-              value={newProduct.expiration}
-              onChange={handleChange}
-              sx={{ marginBottom: 2, fontSize: "1.2rem" }}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          )}
-
-          <TextField
-            name="stock"
-            label="Stock"
-            type="number"
-            fullWidth
-            value={newProduct.stock}
-            onChange={handleChange}
-            sx={{ fontSize: "1.2rem" }}
-            inputProps={{ min: 0 }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleClose}
-            color="secondary"
-            sx={{ fontSize: "1rem", marginRight: 2 }}
-          >
-            Cancel
-          </Button>
+            <FormControl
+              variant="outlined"
+              sx={{ width: "200px" }}
+              disabled={!sortCriteria}
+            >
+              <InputLabel>Order</InputLabel>
+              <Select
+                label="Order"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+              >
+                <MenuItem value="asc">Ascending</MenuItem>
+                <MenuItem value="desc">Descending</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
           <Button
             variant="contained"
-            onClick={handleSave}
-            color="primary"
-            disabled={isSaveDisabled}
-            sx={{ fontSize: "1rem", marginRight: 2 }}
+            color="warning"
+            onClick={handleOpen}
+            sx={{ marginBottom: 2, width: 170, fontSize: "1rem" }}
           >
-            Save
+            Add Product
           </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog open={editOpen} onClose={handleEditClose}>
-        <DialogTitle sx={{ fontSize: "1.2rem" }}>Edit Product</DialogTitle>
-        <DialogContent>
-          <Select
-            value={newProduct.category}
-            onChange={handleSelectChange}
-            displayEmpty
-            sx={{ marginBottom: 2, fontSize: "1rem" }}
-          >
-            <MenuItem value="" disabled>
-              Select Category
-            </MenuItem>
-            <MenuItem value="Clothing">Clothing</MenuItem>
-            <MenuItem value="Electronics">Electronics</MenuItem>
-            <MenuItem value="Food">Food</MenuItem>
-          </Select>
-          <TextField
-            autoFocus
-            name="name"
-            label="Name"
-            type="text"
-            fullWidth
-            value={newProduct.name}
-            onChange={handleChange}
-            sx={{ marginBottom: 2, fontSize: "1.2rem" }}
-          />
-
-          <TextField
-            name="price"
-            label="Price"
-            type="number"
-            fullWidth
-            value={newProduct.price}
-            onChange={handleChange}
-            sx={{ marginBottom: 2, fontSize: "1.2rem" }}
-          />
-
-          {newProduct.category === "Food" && (
-            <TextField
-              name="expiration"
-              label="Expiration Date"
-              type="date"
-              fullWidth
-              value={newProduct.expiration}
-              onChange={handleChange}
-              sx={{ marginBottom: 2, fontSize: "1.2rem" }}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          )}
-
-          <TextField
-            name="stock"
-            label="Stock"
-            type="number"
-            fullWidth
-            value={newProduct.stock}
-            onChange={handleChange}
-            sx={{ fontSize: "1.2rem" }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleEditClose}
-            color="secondary"
-            sx={{ fontSize: "1rem", marginRight: 2 }}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleEditSave}
-            color="primary"
-            disabled={isSaveDisabled}
-            sx={{ fontSize: "1rem", marginRight: 2 }}
-          >
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog open={deleteOpen} onClose={handleDeleteClose}>
-        <DialogTitle sx={{ fontSize: "1.2rem" }}>Delete Product</DialogTitle>
-        <DialogContent>
-          Are you sure you want to delete this item?
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleDeleteClose}
-            color="secondary"
-            sx={{ fontSize: "1rem", marginRight: 2 }}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleDelete}
-            color="error"
-            sx={{ fontSize: "1rem", marginRight: 2 }}
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <TableContainer component={Paper} sx={{ margin: "auto" }}>
-        <Table
-          sx={{ minWidth: 600, bgcolor: "rgba(130, 150, 170, .5)" }}
-          aria-label="simple table"
-        >
-          <TableHead>
-            <TableRow>
-              <TableCell
-                align="left"
-                sx={{
-                  color: "white",
-                  borderBottom: "2px solid rgba(130, 150, 170, .5)",
-                  fontSize: "1.2rem",
-                }}
+          <Dialog open={open} onClose={handleClose}>
+            <DialogTitle sx={{ fontSize: "1.2rem" }}>
+              Add New Product
+            </DialogTitle>
+            <DialogContent>
+              <Select
+                value={newProduct.category}
+                onChange={handleSelectChange}
+                displayEmpty
+                sx={{ marginBottom: 2, fontSize: "1rem" }}
               >
-                Select
-              </TableCell>
+                <MenuItem value="" disabled>
+                  Select Category
+                </MenuItem>
+                <MenuItem value="Clothing">Clothing</MenuItem>
+                <MenuItem value="Electronics">Electronics</MenuItem>
+                <MenuItem value="Food">Food</MenuItem>
+              </Select>
+              <TextField
+                autoFocus
+                name="name"
+                label="Name"
+                type="text"
+                fullWidth
+                value={newProduct.name}
+                onChange={handleChange}
+                sx={{ marginBottom: 2, fontSize: "1.2rem" }}
+              />
 
-              <TableCell
-                align="left"
-                sx={{
-                  color: "white",
-                  borderBottom: "2px solid rgba(130, 150, 170, .5)",
-                  fontSize: "1.2rem",
-                }}
-              >
-                Category
-              </TableCell>
+              <TextField
+                name="price"
+                label="Price"
+                type="number"
+                fullWidth
+                value={newProduct.price}
+                onChange={handleChange}
+                sx={{ marginBottom: 2, fontSize: "1.2rem" }}
+                inputProps={{ min: 0 }}
+              />
 
-              <TableCell
-                align="left"
-                sx={{
-                  color: "white",
-                  borderBottom: "2px solid rgba(130, 150, 170, .5)",
-                  fontSize: "1.2rem",
-                }}
-              >
-                Name
-              </TableCell>
-
-              <TableCell
-                align="left"
-                sx={{
-                  color: "white",
-                  borderBottom: "2px solid rgba(130, 150, 170, .5)",
-                  fontSize: "1.2rem",
-                }}
-              >
-                Price
-              </TableCell>
-
-              <TableCell
-                align="left"
-                sx={{
-                  color: "white",
-                  borderBottom: "2px solid rgba(130, 150, 170, .5)",
-                  fontSize: "1.2rem",
-                }}
-              >
-                Expiration Date
-              </TableCell>
-
-              <TableCell
-                align="left"
-                sx={{
-                  color: "white",
-                  borderBottom: "2px solid rgba(130, 150, 170, .5)",
-                  fontSize: "1.2rem",
-                }}
-              >
-                Stock
-              </TableCell>
-
-              <TableCell
-                align="left"
-                sx={{
-                  color: "white",
-                  borderBottom: "2px solid rgba(130, 150, 170, .5)",
-                  fontSize: "1.2rem",
-                }}
-              >
-                Actions
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredProducts
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((product) => (
-                <TableRow
-                  key={product.id}
-                  sx={{
-                    textDecoration:
-                      product.stock === 0 ? "line-through" : "none",
-                    fontSize: "1rem",
+              {newProduct.category === "Food" && (
+                <TextField
+                  name="expiration"
+                  label="Expiration Date"
+                  type="date"
+                  fullWidth
+                  value={newProduct.expiration}
+                  onChange={handleChange}
+                  sx={{ marginBottom: 2, fontSize: "1.2rem" }}
+                  InputLabelProps={{
+                    shrink: true,
                   }}
-                >
+                />
+              )}
+
+              <TextField
+                name="stock"
+                label="Stock"
+                type="number"
+                fullWidth
+                value={newProduct.stock}
+                onChange={handleChange}
+                sx={{ fontSize: "1.2rem" }}
+                inputProps={{ min: 0 }}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={handleClose}
+                color="secondary"
+                sx={{ fontSize: "1rem", marginRight: 2 }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleSave}
+                color="primary"
+                disabled={isSaveDisabled}
+                sx={{ fontSize: "1rem", marginRight: 2 }}
+              >
+                Save
+              </Button>
+            </DialogActions>
+          </Dialog>
+          <Dialog open={editOpen} onClose={handleEditClose}>
+            <DialogTitle sx={{ fontSize: "1.2rem" }}>Edit Product</DialogTitle>
+            <DialogContent>
+              <Select
+                value={newProduct.category}
+                onChange={handleSelectChange}
+                displayEmpty
+                sx={{ marginBottom: 2, fontSize: "1rem" }}
+              >
+                <MenuItem value="" disabled>
+                  Select Category
+                </MenuItem>
+                <MenuItem value="Clothing">Clothing</MenuItem>
+                <MenuItem value="Electronics">Electronics</MenuItem>
+                <MenuItem value="Food">Food</MenuItem>
+              </Select>
+              <TextField
+                autoFocus
+                name="name"
+                label="Name"
+                type="text"
+                fullWidth
+                value={newProduct.name}
+                onChange={handleChange}
+                sx={{ marginBottom: 2, fontSize: "1.2rem" }}
+              />
+
+              <TextField
+                name="price"
+                label="Price"
+                type="number"
+                fullWidth
+                value={newProduct.price}
+                onChange={handleChange}
+                sx={{ marginBottom: 2, fontSize: "1.2rem" }}
+              />
+
+              {newProduct.category === "Food" && (
+                <TextField
+                  name="expiration"
+                  label="Expiration Date"
+                  type="date"
+                  fullWidth
+                  value={newProduct.expiration}
+                  onChange={handleChange}
+                  sx={{ marginBottom: 2, fontSize: "1.2rem" }}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              )}
+
+              <TextField
+                name="stock"
+                label="Stock"
+                type="number"
+                fullWidth
+                value={newProduct.stock}
+                onChange={handleChange}
+                sx={{ fontSize: "1.2rem" }}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={handleEditClose}
+                color="secondary"
+                sx={{ fontSize: "1rem", marginRight: 2 }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleEditSave}
+                color="primary"
+                disabled={isSaveDisabled}
+                sx={{ fontSize: "1rem", marginRight: 2 }}
+              >
+                Save
+              </Button>
+            </DialogActions>
+          </Dialog>
+          <Dialog open={deleteOpen} onClose={handleDeleteClose}>
+            <DialogTitle sx={{ fontSize: "1.2rem" }}>
+              Delete Product
+            </DialogTitle>
+            <DialogContent>
+              Are you sure you want to delete this item?
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={handleDeleteClose}
+                color="secondary"
+                sx={{ fontSize: "1rem", marginRight: 2 }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleDelete}
+                color="error"
+                sx={{ fontSize: "1rem", marginRight: 2 }}
+              >
+                Delete
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          <TableContainer component={Paper} sx={{ margin: "auto" }}>
+            <Table
+              sx={{ minWidth: 600, bgcolor: "rgba(130, 150, 170, .5)" }}
+              aria-label="simple table"
+            >
+              <TableHead>
+                <TableRow>
                   <TableCell
                     align="left"
                     sx={{
+                      color: "white",
                       borderBottom: "2px solid rgba(130, 150, 170, .5)",
                       fontSize: "1.2rem",
                     }}
                   >
-                    <Checkbox
-                      checked={product.stock === 0}
-                      onChange={() =>
-                        toggleChecked(product.id, product.stock !== 0)
-                      }
-                      aria-label="controlled"
-                    />
+                    Select
                   </TableCell>
 
                   <TableCell
                     align="left"
-                    component="th"
-                    scope="row"
                     sx={{
-                      backgroundColor:
-                        product.category === "Food"
-                          ? getExpirationColor(
-                              product.expiration,
-                              product.stock
-                            )
-                          : "transparent",
                       color: "white",
                       borderBottom: "2px solid rgba(130, 150, 170, .5)",
-                      fontSize: "1rem",
-                      textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
+                      fontSize: "1.2rem",
                     }}
                   >
-                    {product.category || "N/A"}
+                    Category
                   </TableCell>
 
                   <TableCell
                     align="left"
                     sx={{
-                      backgroundColor:
-                        product.category === "Food"
-                          ? getExpirationColor(
-                              product.expiration,
-                              product.stock
-                            )
-                          : "transparent",
                       color: "white",
                       borderBottom: "2px solid rgba(130, 150, 170, .5)",
-                      fontSize: "1rem",
-                      textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
+                      fontSize: "1.2rem",
                     }}
                   >
-                    {product.name || "N/A"}
+                    Name
                   </TableCell>
 
                   <TableCell
                     align="left"
                     sx={{
-                      backgroundColor:
-                        product.category === "Food"
-                          ? getExpirationColor(
-                              product.expiration,
-                              product.stock
-                            )
-                          : "transparent",
                       color: "white",
                       borderBottom: "2px solid rgba(130, 150, 170, .5)",
-                      fontSize: "1rem",
-                      textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
+                      fontSize: "1.2rem",
                     }}
                   >
-                    {product.price != null && !isNaN(product.price)
-                      ? new Intl.NumberFormat("en-US", {
-                          style: "currency",
-                          currency: "USD",
-                        }).format(product.price)
-                      : "N/A"}
+                    Price
                   </TableCell>
 
                   <TableCell
                     align="left"
                     sx={{
-                      backgroundColor:
-                        product.category === "Food"
-                          ? getExpirationColor(
-                              product.expiration,
-                              product.stock
-                            )
-                          : "transparent",
                       color: "white",
                       borderBottom: "2px solid rgba(130, 150, 170, .5)",
-                      fontSize: "1rem",
-                      textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
+                      fontSize: "1.2rem",
                     }}
                   >
-                    {product.expiration
-                      ? new Date(product.expiration).toLocaleDateString(
-                          "en-US",
-                          { year: "numeric", month: "long", day: "numeric" }
-                        )
-                      : "N/A"}
-                    {product.category === "Food" && product.expiration && (
-                      <Typography
-                        variant="body2"
-                        component="span"
-                        sx={{
-                          fontStyle: "italic",
-                          fontSize: "0.9rem",
-                          color: "rgb(37, 20, 20)",
-                        }}
-                      >
-                        {getDaysLeftText(product.expiration)}
-                      </Typography>
-                    )}
+                    Expiration Date
                   </TableCell>
 
                   <TableCell
                     align="left"
                     sx={{
-                      backgroundColor: getStockCellColor(product.stock),
+                      color: "white",
                       borderBottom: "2px solid rgba(130, 150, 170, .5)",
-                      borderLeft: "2px solid rgba(130, 150, 170, .5)",
-                      borderRight: "2px solid rgba(130, 150, 170, .5)",
-                      fontSize: "1rem",
-                      textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
+                      fontSize: "1.2rem",
                     }}
                   >
-                    {product.stock != null ? product.stock : "N/A"}
+                    Stock
                   </TableCell>
 
                   <TableCell
                     align="left"
                     sx={{
+                      color: "white",
                       borderBottom: "2px solid rgba(130, 150, 170, .5)",
-                      fontSize: "1rem",
+                      fontSize: "1.2rem",
                     }}
                   >
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => handleEditOpen(product)}
-                      sx={{
-                        marginRight: 1,
-                        bgcolor: "rgba(24, 190, 41, 0.9)",
-                        color: "white",
-                        "&:hover": {
-                          bgcolor: "rgba(24, 190, 41, 0.7)", // Slightly darker on hover
-                        },
-                      }}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      sx={{ color: "black" }}
-                      variant="contained"
-                      color="error"
-                      onClick={() => handleDeleteOpen(product)}
-                    >
-                      Delete
-                    </Button>
+                    Actions
                   </TableCell>
                 </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-        <TablePagination
-          sx={{
-            bgcolor: "rgba(106, 123, 139, 0.5)",
-            "& .MuiTablePagination-displayedRows": {
-              fontSize: "1.1rem",
-              fontWeight: "bold",
-            },
-          }}
-          rowsPerPageOptions={[10]}
-          component="div"
-          count={totalProducts ?? 0} // ✅ Ensure default value to prevent errors
-          rowsPerPage={rowsPerPage}
-          page={currentPage} // ✅ Use currentPage from store
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          labelDisplayedRows={({ page }: { page: number }) =>
-            `${page + 1} of ${totalPages ?? 1}`
-          }
-          // ✅ Ensure valid totalPages
-          labelRowsPerPage=""
-        />
-      </TableContainer>
-    </>
+              </TableHead>
+              <TableBody>
+                {filteredProducts
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((product) => (
+                    <TableRow
+                      key={product.id}
+                      sx={{
+                        textDecoration:
+                          product.stock === 0 ? "line-through" : "none",
+                        fontSize: "1rem",
+                      }}
+                    >
+                      <TableCell
+                        align="left"
+                        sx={{
+                          borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                          fontSize: "1.2rem",
+                        }}
+                      >
+                        <Checkbox
+                          checked={product.stock === 0}
+                          onChange={() =>
+                            toggleChecked(product.id, product.stock !== 0)
+                          }
+                          aria-label="controlled"
+                        />
+                      </TableCell>
+
+                      <TableCell
+                        align="left"
+                        component="th"
+                        scope="row"
+                        sx={{
+                          backgroundColor:
+                            product.category === "Food"
+                              ? getExpirationColor(
+                                  product.expiration,
+                                  product.stock
+                                )
+                              : "transparent",
+                          color: "white",
+                          borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                          fontSize: "1rem",
+                          textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
+                        }}
+                      >
+                        {product.category || "N/A"}
+                      </TableCell>
+
+                      <TableCell
+                        align="left"
+                        sx={{
+                          backgroundColor:
+                            product.category === "Food"
+                              ? getExpirationColor(
+                                  product.expiration,
+                                  product.stock
+                                )
+                              : "transparent",
+                          color: "white",
+                          borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                          fontSize: "1rem",
+                          textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
+                        }}
+                      >
+                        {product.name || "N/A"}
+                      </TableCell>
+
+                      <TableCell
+                        align="left"
+                        sx={{
+                          backgroundColor:
+                            product.category === "Food"
+                              ? getExpirationColor(
+                                  product.expiration,
+                                  product.stock
+                                )
+                              : "transparent",
+                          color: "white",
+                          borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                          fontSize: "1rem",
+                          textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
+                        }}
+                      >
+                        {product.price != null && !isNaN(product.price)
+                          ? new Intl.NumberFormat("en-US", {
+                              style: "currency",
+                              currency: "USD",
+                            }).format(product.price)
+                          : "N/A"}
+                      </TableCell>
+
+                      <TableCell
+                        align="left"
+                        sx={{
+                          backgroundColor:
+                            product.category === "Food"
+                              ? getExpirationColor(
+                                  product.expiration,
+                                  product.stock
+                                )
+                              : "transparent",
+                          color: "white",
+                          borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                          fontSize: "1rem",
+                          textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
+                        }}
+                      >
+                        {product.expiration
+                          ? new Date(product.expiration).toLocaleDateString(
+                              "en-US",
+                              { year: "numeric", month: "long", day: "numeric" }
+                            )
+                          : "N/A"}
+                        {product.category === "Food" && product.expiration && (
+                          <Typography
+                            variant="body2"
+                            component="span"
+                            sx={{
+                              fontStyle: "italic",
+                              fontSize: "0.9rem",
+                              color: "rgb(37, 20, 20)",
+                            }}
+                          >
+                            {getDaysLeftText(product.expiration)}
+                          </Typography>
+                        )}
+                      </TableCell>
+
+                      <TableCell
+                        align="left"
+                        sx={{
+                          backgroundColor: getStockCellColor(product.stock),
+                          borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                          borderLeft: "2px solid rgba(130, 150, 170, .5)",
+                          borderRight: "2px solid rgba(130, 150, 170, .5)",
+                          fontSize: "1rem",
+                          textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
+                        }}
+                      >
+                        {product.stock != null ? product.stock : "N/A"}
+                      </TableCell>
+
+                      <TableCell
+                        align="left"
+                        sx={{
+                          borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                          fontSize: "1rem",
+                        }}
+                      >
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => handleEditOpen(product)}
+                          sx={{
+                            marginRight: 1,
+                            bgcolor: "rgba(24, 190, 41, 0.9)",
+                            color: "white",
+                            "&:hover": {
+                              bgcolor: "rgba(24, 190, 41, 0.7)", // Slightly darker on hover
+                            },
+                          }}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          sx={{ color: "black" }}
+                          variant="contained"
+                          color="error"
+                          onClick={() => handleDeleteOpen(product)}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+            <TablePagination
+              sx={{
+                bgcolor: "rgba(106, 123, 139, 0.5)",
+                "& .MuiTablePagination-displayedRows": {
+                  fontSize: "1.1rem",
+                  fontWeight: "bold",
+                },
+              }}
+              rowsPerPageOptions={[10]}
+              component="div"
+              count={totalProducts ?? 0} // ✅ Ensure default value to prevent errors
+              rowsPerPage={rowsPerPage}
+              page={currentPage} // ✅ Use currentPage from store
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              labelDisplayedRows={({ page }: { page: number }) =>
+                `${page + 1} of ${totalPages ?? 1}`
+              }
+              // ✅ Ensure valid totalPages
+              labelRowsPerPage=""
+            />
+          </TableContainer>
+        </>
+      )}
+    </div>
   );
 }

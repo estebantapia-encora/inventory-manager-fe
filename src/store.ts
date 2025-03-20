@@ -23,6 +23,7 @@ interface StoreState {
   categoryStock: Record<string, number>; // ✅ Add this
   categoryValue: Record<string, number>;
   checkedState: Map<number, { checked: boolean; stock: number }>;
+  isLoading: boolean;
   fetchProducts: (page?: number, size?: number, sortBy?: string, sortOrder?: string) => Promise<void>;
   searchFilters: {
     name: string;
@@ -50,10 +51,13 @@ const useStore = create<StoreState>((set, get) => ({
   currentPage: 0,
   sortBy:"category",
   sortOrder:"asc",
+  isLoading: false,
   checkedState: new Map<number, { checked: boolean; stock: number }>(), // ✅ Stores checked + stock
 
   fetchProducts: async (page = get().currentPage, size = 10, sortBy = "category", sortOrder = "asc") => {    
     try {
+      set({ isLoading: true });
+
       const response = await axios.get(`http://localhost:9090/inventory/products`, {
         params: { 
           page, 
@@ -73,27 +77,20 @@ const useStore = create<StoreState>((set, get) => ({
       }));
   
       // Update state with the new fetched data
-      set((state) => ({
-        ...state,  // ✅ Keeps all existing functions automatically
-        products: fetchedProducts,  // ✅ Replace with new data
+      set(() => ({
+        products: fetchedProducts, // ✅ Full replacement, no merging
         totalPages: response.data.totalPages,
         totalProducts: response.data.totalProducts,
-        totalStock: response.data.totalStock || state.totalStock,  // ✅ Prevents reset on new pages
-        totalValue: response.data.totalValue || state.totalValue,
-        categoryStock: response.data.categoryStock || {}, // ✅ Store full category-wise stock
+        totalStock: response.data.totalStock !== undefined ? response.data.totalStock : 0,
+        totalValue: response.data.totalValue !== undefined ? response.data.totalValue : 0,
+        categoryStock: response.data.categoryStock || {}, 
         categoryValue: response.data.categoryValue || {},
-        currentPage: page,  // ✅ Ensure current page is updated
+        currentPage: page,
         sortBy,
         sortOrder,
-
-        // Preserve existing functions
-        fetchProducts: state.fetchProducts, // ✅ Ensure fetchProducts remains accessible
-        toggleChecked: state.toggleChecked, // ✅ Keep existing function for marking products out of stock
-        addProduct: state.addProduct, // ✅ Keep existing function for adding a product
-        editProduct: state.editProduct, // ✅ Keep existing function for editing a product
-        deleteProduct: state.deleteProduct, // ✅ Keep existing function for deleting a product
-        searchFilters: state.searchFilters, // ✅ Preserve search filters state
+        isLoading:false,
       }));
+      
 
       console.log("✅ categoryStock: ", response.data.categoryStock);
       console.log("✅ categoryValue: ", response.data.categoryValue);
@@ -136,10 +133,10 @@ const useStore = create<StoreState>((set, get) => ({
         };
       });
   
-
-
-      // ✅ Ensure UI refreshes by fetching updated products
-      await get().fetchProducts(get().currentPage); // ✅ Keep current page
+      setTimeout(() => {
+        get().fetchProducts(get().currentPage);
+      }, 500); // ✅ Added slight delay to ensure UI updates correctly
+      
   
     } catch (error) {
       console.error("❌ Error updating stock status:", error);
