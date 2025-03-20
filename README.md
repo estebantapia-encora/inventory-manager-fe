@@ -2,14 +2,14 @@
 
 An Inventory Management System built with React, MaterialUI and Zustand.
 ## Table of Contents
-- [Features]
-- [Tech Stack]
-- [Installation]
-- [Connecting to the Backend]
-- [API Endpoints]
-- [Running Tests]
-- [Deployment]
-- [License]
+- Features
+- Tech Stack
+- Installation
+- Connecting to the Backend
+- API Endpoints
+- Running Tests
+- Deployment
+- License
 
 
 ## Features
@@ -29,8 +29,8 @@ An Inventory Management System built with React, MaterialUI and Zustand.
 
 ## Installation
 ### **1. Clone the Repository**
-git clone https://github.com/estebantapia-encora/inventory-manager-fe.git
-cd inventory-manager-fe
+- git clone https://github.com/estebantapia-encora/inventory-manager-fe.git
+- cd inventory-manager-fe
 
 ### **2. Install Dependencies**
 - npm install
@@ -39,7 +39,7 @@ The application will be available at http://localhost:8080/.
 
 ## Connecting to the Backend
 - Clone and start the Backend Repository (https://github.com/estebantapia-encora/inventory-manager-be)
-The Frontend will consume the backend API at http://localhost:9090/inventory/products/.
+- The Frontend will consume the backend API at http://localhost:9090/inventory/products/.
 
 ## API Endpoints used by the Frontend
 - METHOD |          ENDPOINT         |            DESCRIPTION            |
