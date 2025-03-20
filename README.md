@@ -9,7 +9,6 @@ An Inventory Management System built with React, MaterialUI and Zustand.
 - [Connecting to the Backend](#connecting-to-the-backend)
 - [API Endpoints](#api-endpoints)
 - [Running Tests](#running-tests)
-- [Install Dependencies](#install-dependencies)
 - [Deployment](#deployment)
 - [License](#license)
 
