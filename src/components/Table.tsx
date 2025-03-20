@@ -291,6 +291,11 @@ export default function BasicTable() {
     >
   ) => {
     const { name, value } = e.target;
+    const parsedValue = parseFloat(value as string); // Parse it to a number
+
+    if ((name === "price" || name === "stock") && parsedValue < 0) {
+      return; // Prevent updating with a negative value
+    }
     setNewProduct((prev) => ({
       ...prev,
       [name as string]: value, // This ensures that each field updates correctly
@@ -460,6 +465,7 @@ export default function BasicTable() {
             value={newProduct.price}
             onChange={handleChange}
             sx={{ marginBottom: 2, fontSize: "1.2rem" }}
+            inputProps={{ min: 0 }}
           />
 
           {newProduct.category === "Food" && (
@@ -485,6 +491,7 @@ export default function BasicTable() {
             value={newProduct.stock}
             onChange={handleChange}
             sx={{ fontSize: "1.2rem" }}
+            inputProps={{ min: 0 }}
           />
         </DialogContent>
         <DialogActions>
