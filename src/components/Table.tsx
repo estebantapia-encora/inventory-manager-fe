@@ -230,14 +230,35 @@ export default function BasicTable() {
     setCurrentProduct(null);
   };
 
-  const handleSave = () => {
-    addProduct({
+  const handleSave = async () => {
+    console.log("Saving product:", newProduct);
+    console.log("Category:", newProduct.category);
+    console.log("Name:", newProduct.name);
+    console.log("Price:", newProduct.price);
+    console.log("Expiration date:", newProduct.expiration);
+    console.log("Stock:", newProduct.stock);
+
+    const price = parseFloat(newProduct.price); // Make sure this is parsed correctly
+    const stock = parseInt(newProduct.stock, 10);
+
+    console.log("Parsed Price:", price);
+    console.log("Parsed Stock:", stock);
+    // Validate fields
+    if (isNaN(price) || isNaN(stock) || price <= 0 || stock <= 0) {
+      console.log("Validation failed: Invalid price or stock");
+      return; // Don't submit if validation fails
+    }
+    const expiration =
+      newProduct.category === "Food" ? newProduct.expiration : "";
+
+    await addProduct({
       name: newProduct.name,
       category: newProduct.category,
-      price: parseFloat(newProduct.price),
-      expiration: newProduct.category === "Food" ? newProduct.expiration : "",
-      stock: parseInt(newProduct.stock, 10),
+      price: price, // Ensure the correct value is passed
+      expiration: expiration,
+      stock: stock, // Ensure the correct value is passed
     });
+    fetchProducts(); // Ensure the inventory updates after adding a new product
     handleClose();
   };
 
@@ -270,7 +291,10 @@ export default function BasicTable() {
     >
   ) => {
     const { name, value } = e.target;
-    setNewProduct((prev) => ({ ...prev, [name as string]: value }));
+    setNewProduct((prev) => ({
+      ...prev,
+      [name as string]: value, // This ensures that each field updates correctly
+    }));
   };
 
   const handleSelectChange = (e: SelectChangeEvent<string>) => {
