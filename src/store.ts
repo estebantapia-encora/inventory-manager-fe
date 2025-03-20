@@ -247,10 +247,21 @@ const useStore = create<StoreState>((set, get) => ({
       if (response.status === 200 || response.status === 204) { 
         console.log("✅ Delete successful, updating Zustand state");
   
-        set((state) => ({
-          products: state.products.filter((product) => product.id !== id),
-        }));
+        set((state) => {
+          const updatedProducts = state.products.filter((product) => product.id !== id);
   
+          // 🔹 Recalculate total stock and value
+          const newTotalStock = updatedProducts.reduce((sum, p) => sum + p.stock, 0);
+          const newTotalValue = updatedProducts.reduce((sum, p) => sum + p.price * p.stock, 0);
+  
+          return {
+            products: updatedProducts,
+            totalStock: newTotalStock, // ✅ Update immediately
+            totalValue: newTotalValue, // ✅ Update immediately
+          };
+        });
+
+
         console.log("📥 Fetching latest products after delete...");
         await get().fetchProducts(get().currentPage); // ✅ Keep current page
       } else {
