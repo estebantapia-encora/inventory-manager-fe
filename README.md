@@ -42,13 +42,15 @@ The application will be available at http://localhost:8080/.
 - The Frontend will consume the backend API at http://localhost:9090/inventory/products/.
 
 ## API Endpoints used by the Frontend
-METHOD |          ENDPOINT         |            DESCRIPTION            |
-- GET     |  /products                :Fetches all products.             |
-- POST    |  /products                : Adds a new product.               |
-- PUT     |  /products{id}            : Edits a product.                  |
-- DELETE  |  /products{id}            : Deletes a product.                |
-- PUT     |  /products{id}/instock    : Restores product stock            |
-- POST    |  /products{id}/outofstock : Marks a product as "out of stock" |
+| METHOD  | ENDPOINT                     | DESCRIPTION                      |
+|---------|------------------------------|----------------------------------|
+| **GET**  | `/products`                   | Fetch all products               |
+| **POST** | `/products`                   | Add a new product                |
+| **PUT**  | `/products/{id}`               | Edit a product                   |
+| **DELETE** | `/products/{id}`             | Delete a product                 |
+| **PUT**  | `/products/{id}/instock`       | Restore product stock            |
+| **POST** | `/products/{id}/outofstock`    | Mark a product as "out of stock" |
+
 
 ## Running Tests - To run unit tests for the frontend
  - npm run test
