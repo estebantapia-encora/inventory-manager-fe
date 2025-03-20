@@ -1,54 +1,67 @@
-# React + TypeScript + Vite
+# Inventory Manager - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An Inventory Management System built with React, MaterialUI and Zustand.
+## **Table of Contents**
 
-Currently, two official plugins are available:
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Connecting to the Backend](#connecting-to-the-backend)
+- [API Endpoints](#api-endpoints)
+- [Running Tests](#running-tests)
+- [Deployment](#deployment)
+- [License](#license)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
+- **Product Management:** Add, edit, delete, and search for products.
+- **Stock Control:**
+  - Mark products as "Out of Stock".
+  - Unchecking the "Out of Stock" box restores stock to **10** by default.
+    
+- **Filtering & Sorting:**
+  - Filter products by **name, category, and availability**.
+  - **Two-column sorting** (Sort by multiple attributes).
+    
+- **Pagination Support:** 10 products per page.
+- **User Interface:** Styled with **Material UI**.
 
-## Expanding the ESLint configuration
+## Tech Stack
+- **Frontend:** React, TypeScript, Zustand (State Management), Material UI, Vite.
+- **HTTP Requests:** Axios (API communication with backend)
+- **Backend:** Java, Spring Boot ([Backend Repository](https://github.com/estebantapia-encora/inventory-manager-be)).
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Installation
+### **1. Clone the Repository**
+- git clone https://github.com/estebantapia-encora/inventory-manager-fe.git
+- cd inventory-manager-fe
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### **2. Install Dependencies**
+- npm install
+- npm run dev
+The application will be available at http://localhost:8080/.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Connecting to the Backend
+- Clone and start the Backend Repository (https://github.com/estebantapia-encora/inventory-manager-be)
+- The Frontend will consume the backend API at http://localhost:9090/inventory/products/.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## API Endpoints
+| METHOD  | ENDPOINT                     | DESCRIPTION                      |
+|---------|------------------------------|----------------------------------|
+| **GET**  | `/products`                   | Fetch all products               |
+| **POST** | `/products`                   | Add a new product                |
+| **PUT**  | `/products/{id}`               | Edit a product                   |
+| **DELETE** | `/products/{id}`             | Delete a product                 |
+| **PUT**  | `/products/{id}/instock`       | Restore product stock            |
+| **POST** | `/products/{id}/outofstock`    | Mark a product as "out of stock" |
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+
+## Running Tests 
+- To run unit tests for the frontend: npm run test
+
+## Deployment
+- To build and deploy the frontend: npm run build
+
+ ## License
+This project is licensed under the MIT License.
+https://github.com/estebantapia-encora/inventory-manager-fe/blob/frontend-main/LICENSE
+For more information on the MIT license, go to: https://opensource.org/license/mit
