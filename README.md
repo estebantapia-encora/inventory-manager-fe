@@ -43,12 +43,12 @@ The application will be available at http://localhost:8080/.
 
 ## API Endpoints used by the Frontend
 - METHOD |          ENDPOINT         |            DESCRIPTION            |
- GET     |  /products                | Fetches all products.             |
- POST    |  /products                | Adds a new product.               |
- PUT     |  /products{id}            | Edits a product.                  |
- DELETE  |  /products{id}            | Deletes a product.                |
- PUT     |  /products{id}/instock    | Restores product stock            |
- POST    |  /products{id}/outofstock | Marks a product as "out of stock" |
+- GET     |  /products                | Fetches all products.             |
+- POST    |  /products                | Adds a new product.               |
+- PUT     |  /products{id}            | Edits a product.                  |
+- DELETE  |  /products{id}            | Deletes a product.                |
+- PUT     |  /products{id}/instock    | Restores product stock            |
+- POST    |  /products{id}/outofstock | Marks a product as "out of stock" |
 
 ## Running Tests - To run unit tests for the frontend
  - npm run test
