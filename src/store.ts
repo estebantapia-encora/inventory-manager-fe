@@ -133,10 +133,7 @@ const useStore = create<StoreState>((set, get) => ({
         };
       });
   
-      setTimeout(() => {
-        get().fetchProducts(get().currentPage);
-      }, 500); // ✅ Added slight delay to ensure UI updates correctly
-      
+ 
   
     } catch (error) {
       console.error("❌ Error updating stock status:", error);

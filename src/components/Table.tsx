@@ -822,10 +822,13 @@ export default function BasicTable() {
                         }}
                       >
                         {product.expiration
-                          ? new Date(product.expiration).toLocaleDateString(
-                              "en-US",
-                              { year: "numeric", month: "long", day: "numeric" }
-                            )
+                          ? new Date(
+                              product.expiration + "T00:00:00"
+                            ).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })
                           : "N/A"}
                         {product.category === "Food" && product.expiration && (
                           <Typography
