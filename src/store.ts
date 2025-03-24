@@ -20,7 +20,7 @@ interface StoreState {
   sortOrder:string;
   totalStock: number;
   totalValue: number;
-  categoryStock: Record<string, number>; // ✅ Add this
+  categoryStock: Record<string, number>; 
   categoryValue: Record<string, number>;
   checkedState: Map<number, { checked: boolean; stock: number }>;
   isLoading: boolean;
@@ -52,7 +52,7 @@ const useStore = create<StoreState>((set, get) => ({
   sortBy:"category",
   sortOrder:"asc",
   isLoading: false,
-  checkedState: new Map<number, { checked: boolean; stock: number }>(), // ✅ Stores checked + stock
+  checkedState: new Map<number, { checked: boolean; stock: number }>(), 
 
   fetchProducts: async (page = get().currentPage, size = 10, sortBy = "category", sortOrder = "asc") => {    
     try {
@@ -62,9 +62,8 @@ const useStore = create<StoreState>((set, get) => ({
         params: { 
           page, 
           size, 
-          sortBy: sortBy || get().sortBy,   // ✅ Uses Zustand store default if not provided
-          sortOrder: sortOrder || get().sortOrder // ✅ Uses Zustand store default if not provided
-        }
+          sortBy: sortBy || get().sortBy,   
+          sortOrder: sortOrder || get().sortOrder }
       });
 
       const fetchedProducts = response.data.products.map((product: any) => ({
@@ -75,10 +74,9 @@ const useStore = create<StoreState>((set, get) => ({
         expiration: product.expirationDate ?? null,
         stock: product.quantityInStock ?? null,
       }));
-  
-      // Update state with the new fetched data
+
       set(() => ({
-        products: fetchedProducts, // ✅ Full replacement, no merging
+        products: fetchedProducts, 
         totalPages: response.data.totalPages,
         totalProducts: response.data.totalProducts,
         totalStock: response.data.totalStock !== undefined ? response.data.totalStock : 0,
@@ -104,7 +102,7 @@ const useStore = create<StoreState>((set, get) => ({
   
   toggleChecked: async (id: number, checked: boolean) => {
     try {
-      const baseUrl = "http://localhost:9090"; // ✅ Ensure the correct backend URL
+      const baseUrl = "http://localhost:9090"; 
       const endpoint = checked
         ? `${baseUrl}/inventory/products/${id}/outofstock`
         : `${baseUrl}/inventory/products/${id}/instock`;
@@ -121,8 +119,7 @@ const useStore = create<StoreState>((set, get) => ({
         const updatedProducts = state.products.map((product) =>
           product.id === id ? { ...product, stock: checked ? 0 : 10 } : product
         );
-  
-        // 🔹 Recalculate total stock and value
+
         const newTotalStock = updatedProducts.reduce((sum, p) => sum + p.stock, 0);
         const newTotalValue = updatedProducts.reduce((sum, p) => sum + p.price * p.stock, 0);
   
@@ -171,9 +168,9 @@ const useStore = create<StoreState>((set, get) => ({
       const formattedProduct = {
         name: product.name,
         category: product.category,
-        unitPrice: product.price, // ✅ Match backend naming
-        expirationDate: product.expiration, // ✅ Match backend naming
-        quantityInStock: product.stock, // ✅ Match backend naming
+        unitPrice: product.price, 
+        expirationDate: product.expiration, 
+        quantityInStock: product.stock, 
       };
   
       console.log("🆕 Sending request to add new product:", formattedProduct);
@@ -185,8 +182,7 @@ const useStore = create<StoreState>((set, get) => ({
   
       if (response.status === 200 || response.status === 201) {
         console.log("✅ Product added successfully, updating Zustand state");
-  
-        // Fetch latest products from backend
+ 
         await get().fetchProducts();
       } else {
         console.error("❌ Failed to add product, status:", response.status);
@@ -202,9 +198,9 @@ const useStore = create<StoreState>((set, get) => ({
     try {
       const formattedProduct = {
         ...updatedProduct,
-        unitPrice: updatedProduct.price, // ✅ Fix naming issue
-        quantityInStock: updatedProduct.stock, // ✅ Fix naming issue
-        expirationDate: updatedProduct.expiration || null, // ✅ Correct field name
+        unitPrice: updatedProduct.price, 
+        quantityInStock: updatedProduct.stock, 
+        expirationDate: updatedProduct.expiration || null, 
       };
   
       console.log(`🔄 Sending update request for product ID ${id}`, formattedProduct);
@@ -221,13 +217,13 @@ const useStore = create<StoreState>((set, get) => ({
         }));
   
         console.log("📥 Fetching latest products after update...");
-        await get().fetchProducts(get().currentPage); // ✅ Keep current page
+        await get().fetchProducts(get().currentPage); 
       } else {
         console.error("❌ Edit failed with status:", response.status);
       }
     } catch (error) {
       console.error("❌ Error editing product:", error);
-      get().fetchProducts(get().currentPage); // ✅ Restore latest backend state if error
+      get().fetchProducts(get().currentPage); 
     }
   },
   
@@ -244,26 +240,26 @@ const useStore = create<StoreState>((set, get) => ({
         set((state) => {
           const updatedProducts = state.products.filter((product) => product.id !== id);
   
-          // 🔹 Recalculate total stock and value
+          
           const newTotalStock = updatedProducts.reduce((sum, p) => sum + p.stock, 0);
           const newTotalValue = updatedProducts.reduce((sum, p) => sum + p.price * p.stock, 0);
   
           return {
             products: updatedProducts,
-            totalStock: newTotalStock, // ✅ Update immediately
-            totalValue: newTotalValue, // ✅ Update immediately
+            totalStock: newTotalStock, 
+            totalValue: newTotalValue, 
           };
         });
 
 
         console.log("📥 Fetching latest products after delete...");
-        await get().fetchProducts(get().currentPage); // ✅ Keep current page
+        await get().fetchProducts(get().currentPage); 
       } else {
         console.error("❌ Delete failed with status:", response.status);
       }
     } catch (error) {
       console.error("❌ Error deleting product:", error);
-      get().fetchProducts(get().currentPage); // ✅ Keep current page even on error
+      get().fetchProducts(get().currentPage); 
     }
   },
 

@@ -40,23 +40,22 @@ export default function BasicTable() {
     isLoading,
   } = useStore();
   const [filteredProducts, setFilteredProducts] = useState(products);
-  const [sortCriteria, setSortCriteria] = useState(""); // Default sorting by none
-  const [secondarySortCriteria, setSecondarySortCriteria] = useState(""); // Default secondary sorting by none
-  const [sortOrder, setSortOrder] = useState("asc"); // Default sorting order ascending
+  const [sortCriteria, setSortCriteria] = useState("");
+  const [secondarySortCriteria, setSecondarySortCriteria] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10); // Default: 10 rows per page
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     fetchProducts(currentPage, rowsPerPage, sortCriteria, sortOrder);
   }, [currentPage, rowsPerPage, sortCriteria, sortOrder]);
 
   useEffect(() => {
-    setFilteredProducts([...products]); // ✅ Updates filteredProducts when products change
-  }, [products]); // ✅ This runs only when `products` is updated
+    setFilteredProducts([...products]);
+  }, [products]);
 
   useEffect(() => {
-    // ✅ Apply filtering FIRST before pagination
     const filtered = products.filter((product) => {
       const matchesName = product.name
         .toLowerCase()
@@ -73,7 +72,6 @@ export default function BasicTable() {
       return matchesName && matchesCategory && matchesAvailability;
     });
 
-    // ✅ Sorting (applied to filtered results)
     const sorted = filtered.sort((a, b) => {
       let comparison = 0;
       if (sortCriteria) {
@@ -109,18 +107,15 @@ export default function BasicTable() {
       return sortOrder === "asc" ? comparison : -comparison;
     });
 
-    // ✅ Update filtered products AFTER filtering and sorting
     setFilteredProducts(sorted);
 
-    // ✅ Compute total pages AFTER filtering
     const computedTotalPages = Math.max(
       1,
       Math.ceil(sorted.length / rowsPerPage)
     );
 
-    // ✅ If current page is higher than available pages, reset it
     if (page > computedTotalPages - 1) {
-      setPage(0); // ✅ Always reset to first page when filtering
+      setPage(0);
     }
   }, [
     products,
@@ -129,7 +124,7 @@ export default function BasicTable() {
     secondarySortCriteria,
     sortOrder,
     rowsPerPage,
-    page, // ✅ Now correctly included in dependencies
+    page,
   ]);
 
   const [open, setOpen] = useState(false);
@@ -183,7 +178,7 @@ export default function BasicTable() {
       stock: product.stock.toString(),
       expiration: product.expiration
         ? new Date(product.expiration).toISOString().split("T")[0]
-        : "", // Convert to YYYY-MM-DD format,
+        : "",
       checked: product.checked,
     });
     setNewProduct({
@@ -193,7 +188,7 @@ export default function BasicTable() {
       stock: product.stock.toString(),
       expiration: product.expiration
         ? new Date(product.expiration).toISOString().split("T")[0]
-        : "", // Convert to YYYY-MM-DD format,
+        : "",
     });
     setEditOpen(true);
   };
@@ -239,7 +234,7 @@ export default function BasicTable() {
     console.log("Expiration date:", newProduct.expiration);
     console.log("Stock:", newProduct.stock);
 
-    const price = parseFloat(newProduct.price); // Make sure this is parsed correctly
+    const price = parseFloat(newProduct.price);
     const stock = parseInt(newProduct.stock, 10);
 
     console.log("Parsed Price:", price);
@@ -247,7 +242,7 @@ export default function BasicTable() {
     // Validate fields
     if (isNaN(price) || isNaN(stock) || price <= 0 || stock <= 0) {
       console.log("Validation failed: Invalid price or stock");
-      return; // Don't submit if validation fails
+      return;
     }
     const expiration =
       newProduct.category === "Food" ? newProduct.expiration : "";
@@ -255,12 +250,12 @@ export default function BasicTable() {
     await addProduct({
       name: newProduct.name,
       category: newProduct.category,
-      price: price, // Ensure the correct value is passed
+      price: price,
       expiration: expiration,
-      stock: stock, // Ensure the correct value is passed
+      stock: stock,
     });
 
-    fetchProducts(); // Ensure the inventory updates after adding a new product
+    fetchProducts();
     handleClose();
   };
 
@@ -273,7 +268,7 @@ export default function BasicTable() {
         expiration:
           newProduct.category === "Food" && newProduct.expiration
             ? newProduct.expiration
-            : currentProduct.expiration, // ✅ Preserve expiration date if not provided
+            : currentProduct.expiration,
         stock: parseInt(newProduct.stock, 10),
       });
     }
@@ -293,14 +288,14 @@ export default function BasicTable() {
     >
   ) => {
     const { name, value } = e.target;
-    const parsedValue = parseFloat(value as string); // Parse it to a number
+    const parsedValue = parseFloat(value as string);
 
     if ((name === "price" || name === "stock") && parsedValue < 0) {
-      return; // Prevent updating with a negative value
+      return;
     }
     setNewProduct((prev) => ({
       ...prev,
-      [name as string]: value, // This ensures that each field updates correctly
+      [name as string]: value,
     }));
   };
 
@@ -310,8 +305,8 @@ export default function BasicTable() {
   };
 
   const handleChangePage = (_: unknown, newPage: number) => {
-    setPage(newPage); // ✅ Updates state
-    fetchProducts(newPage, rowsPerPage); // ✅ Fetch correct page
+    setPage(newPage);
+    fetchProducts(newPage, rowsPerPage);
   };
 
   const handleChangeRowsPerPage = (
@@ -319,7 +314,7 @@ export default function BasicTable() {
   ) => {
     const newSize = parseInt(event.target.value, 10);
     setRowsPerPage(newSize);
-    setPage(0); // ✅ Reset to page 0 when changing page size
+    setPage(0);
   };
 
   const isSaveDisabled =
@@ -330,17 +325,17 @@ export default function BasicTable() {
     (newProduct.category === "Food" && !newProduct.expiration);
 
   const getExpirationColor = (expiration: string, stock: number) => {
-    if (stock === 0) return "transparent"; // Remove background color if stock is 0
-    if (!expiration) return "transparent"; // No background color for no expiration date
+    if (stock === 0) return "transparent";
+    if (!expiration) return "transparent";
 
     const daysUntilExpiration = differenceInDays(
       parseISO(expiration),
       new Date()
     );
 
-    if (daysUntilExpiration < 7) return "rgba(235, 21, 21, 0.9)"; // Red for less than 1 week
-    if (daysUntilExpiration <= 14) return "rgba(235, 235, 35, 0.86)"; // Yellow for 1-2 weeks
-    return "rgb(29, 174, 29)"; // Green for more than 2 weeks
+    if (daysUntilExpiration < 7) return "rgba(235, 21, 21, 0.9)";
+    if (daysUntilExpiration <= 14) return "rgba(235, 235, 35, 0.86)";
+    return "rgb(29, 174, 29)";
   };
 
   const getDaysLeftText = (expiration: string) => {
@@ -350,9 +345,9 @@ export default function BasicTable() {
   };
 
   const getStockCellColor = (stock: number) => {
-    if (stock >= 1 && stock <= 5) return "rgb(248, 54, 54)"; // Red
-    if (stock >= 5 && stock <= 10) return "rgb(241, 162, 43)"; // Yellow
-    return "transparent"; // Green
+    if (stock >= 1 && stock <= 5) return "rgb(248, 54, 54)";
+    if (stock >= 5 && stock <= 10) return "rgb(241, 162, 43)";
+    return "transparent";
   };
 
   return (
@@ -385,7 +380,7 @@ export default function BasicTable() {
             <FormControl
               variant="outlined"
               sx={{ width: "200px" }}
-              disabled={!sortCriteria} // Disable if "Sort By" has no selection
+              disabled={!sortCriteria}
             >
               <InputLabel>And</InputLabel>
               <Select
@@ -394,8 +389,8 @@ export default function BasicTable() {
                 onChange={(e) => setSecondarySortCriteria(e.target.value)}
                 sx={{
                   "&.Mui-disabled": {
-                    borderColor: "transparent", // Remove white border effect when hovering
-                    color: "rgba(0, 0, 0, 0.38)", // Match MUI's disabled color
+                    borderColor: "transparent",
+                    color: "rgba(0, 0, 0, 0.38)",
                   },
                 }}
               >
@@ -403,7 +398,7 @@ export default function BasicTable() {
                   <em>None</em>
                 </MenuItem>
                 {["category", "name", "price", "expiration", "stock"]
-                  .filter((option) => option !== sortCriteria) // Prevent duplicate sorting criteria
+                  .filter((option) => option !== sortCriteria)
                   .map((option) => (
                     <MenuItem key={option} value={option}>
                       {option.charAt(0).toUpperCase() + option.slice(1)}
@@ -875,7 +870,7 @@ export default function BasicTable() {
                             bgcolor: "rgba(24, 190, 41, 0.9)",
                             color: "white",
                             "&:hover": {
-                              bgcolor: "rgba(24, 190, 41, 0.7)", // Slightly darker on hover
+                              bgcolor: "rgba(24, 190, 41, 0.7)",
                             },
                           }}
                         >
@@ -904,15 +899,14 @@ export default function BasicTable() {
               }}
               rowsPerPageOptions={[10]}
               component="div"
-              count={totalProducts ?? 0} // ✅ Ensure default value to prevent errors
+              count={totalProducts ?? 0}
               rowsPerPage={rowsPerPage}
-              page={currentPage} // ✅ Use currentPage from store
+              page={currentPage}
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
               labelDisplayedRows={({ page }: { page: number }) =>
                 `${page + 1} of ${totalPages ?? 1}`
               }
-              // ✅ Ensure valid totalPages
               labelRowsPerPage=""
             />
           </TableContainer>

@@ -30,16 +30,15 @@ const SearchFilters = () => {
     setLocalFilters({ ...localFilters, [name as string]: value as string });
   };
 
-  const { fetchProducts } = useStore(); // ✅ Access from Zustand
+  const { fetchProducts } = useStore();
 
   const handleSearch = () => {
-    setSearchFilters(localFilters); // ✅ Apply filters
+    setSearchFilters(localFilters);
 
-    // ✅ Fetch all products before filtering
-    fetchProducts(0, 1000); // 🚀 Fetch large dataset (fixes search scope)
+    fetchProducts(0, 1000);
 
     setTimeout(() => {
-      toggleSearchTriggered(); // ✅ Ensure UI updates correctly
+      toggleSearchTriggered();
     }, 0);
   };
 
@@ -51,10 +50,10 @@ const SearchFilters = () => {
       availability: "",
     });
 
-    fetchProducts(0, 10); // ✅ Refetch the first page with default pagination
+    fetchProducts(0, 10);
 
     setTimeout(() => {
-      toggleSearchTriggered(); // ✅ Ensure search updates correctly
+      toggleSearchTriggered();
     }, 0);
   };
 
@@ -68,15 +67,14 @@ const SearchFilters = () => {
           value={localFilters.name}
           onChange={handleInputChange}
           variant="outlined"
-          sx={{ width: "200px" }} // Set the width for the Product Name input
+          sx={{ width: "200px" }}
         />
         <FormControl variant="outlined" sx={{ width: "200px" }}>
           {" "}
-          {/* Set the same width for Category */}
           <InputLabel>Category</InputLabel>
           <Select
             label="Category"
-            inputProps={{ name: "category" }} // Ensure the name attribute is set
+            inputProps={{ name: "category" }}
             value={localFilters.category}
             onChange={handleSelectChange}
           >
@@ -90,11 +88,10 @@ const SearchFilters = () => {
         </FormControl>
         <FormControl variant="outlined" sx={{ width: "200px" }}>
           {" "}
-          {/* Set the same width for Availability */}
           <InputLabel>Availability</InputLabel>
           <Select
             label="Availability"
-            inputProps={{ name: "availability" }} // Ensure the name attribute is set
+            inputProps={{ name: "availability" }}
             value={localFilters.availability}
             onChange={handleSelectChange}
           >
