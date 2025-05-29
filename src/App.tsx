@@ -11,7 +11,6 @@ function App() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          bgcolor: "#212a33",
           minHeight: "100vh",
           width: "100vw",
         }}
