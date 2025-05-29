@@ -380,9 +380,10 @@ export default function BasicTable() {
           </Select>
         </FormControl>
       </Box>
+      <div style={{marginTop:"14px"}}></div>
       <Button
         variant="contained"
-        color="warning"
+      
         onClick={handleOpen}
         sx={{ marginBottom: 2, width: 170, fontSize: "1rem" }}
       >

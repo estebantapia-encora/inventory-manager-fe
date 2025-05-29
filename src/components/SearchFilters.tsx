@@ -97,7 +97,7 @@ const SearchFilters = () => {
         <Button variant="contained" color="primary" onClick={handleSearch}>
           Search
         </Button>
-        <Button variant="contained" color="secondary" onClick={handleClear}>
+        <Button variant="outlined" color="primary" onClick={handleClear}>
           Clear
         </Button>
       </Box>
