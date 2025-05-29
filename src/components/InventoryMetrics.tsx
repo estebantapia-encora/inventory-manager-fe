@@ -45,15 +45,14 @@ const InventoryMetrics = () => {
             {categories.map((category) => (
               <TableRow
                 key={category}
-                sx={
-                  category === "Overall"
-                    ? {
-                        fontWeight: "bold",
-                        borderTop: "3px solid rgba(130, 150, 170, .5)", // Thicker border
-                        bgcolor: "#181f26", // Inner color
-                      }
-                    : { bgcolor: "#181f26" } // Inner color for other rows
-                }
+                sx={{
+                  bgcolor: "rgb(239, 239, 239)",
+                  borderTop: "1px solid rgba(200, 200, 200, 0.8)",
+                  ...(category === "Overall" && {
+                    fontWeight: "bold",
+                    borderTop: "3px solid rgba(223, 223, 223, 0.95)",
+                  }),
+                }}
               >
                 <TableCell
                   sx={

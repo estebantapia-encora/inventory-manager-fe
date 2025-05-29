@@ -294,7 +294,7 @@ export default function BasicTable() {
       new Date()
     );
 
-    if (daysUntilExpiration < 7) return "rgba(235, 21, 21, 0.9)"; // Red for less than 1 week
+    if (daysUntilExpiration < 7) return "rgba(245, 28, 28, 0.58)"; // Red for less than 1 week
     if (daysUntilExpiration <= 14) return "rgba(235, 235, 35, 0.86)"; // Yellow for 1-2 weeks
     return "rgb(29, 174, 29)"; // Green for more than 2 weeks
   };
@@ -306,8 +306,8 @@ export default function BasicTable() {
   };
 
   const getStockCellColor = (stock: number) => {
-    if (stock >= 1 && stock <= 5) return "rgb(248, 54, 54)"; // Red
-    if (stock >= 5 && stock <= 10) return "rgb(241, 162, 43)"; // Yellow
+    if (stock >= 1 && stock <= 5) return "rgba(245, 28, 28, 0.58)"; // Red
+    if (stock >= 5 && stock <= 10) return "rgba(241, 162, 43, 0.85)"; // Yellow
     return "transparent"; // Green
   };
 
@@ -576,7 +576,7 @@ export default function BasicTable() {
 
       <TableContainer component={Paper} sx={{ margin: "auto" }}>
         <Table
-          sx={{ minWidth: 600, bgcolor: "rgba(130, 150, 170, .5)" }}
+          sx={{ minWidth: 600, bgcolor: "rgb(239, 239, 239)" }}
           aria-label="simple table"
         >
           <TableHead>
@@ -584,8 +584,8 @@ export default function BasicTable() {
               <TableCell
                 align="left"
                 sx={{
-                  color: "white",
-                  borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                textShadow: "1px 1px 2px gray",
+                  borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                   fontSize: "1.2rem",
                 }}
               >
@@ -594,8 +594,8 @@ export default function BasicTable() {
               <TableCell
                 align="left"
                 sx={{
-                  color: "white",
-                  borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                  textShadow: "1px 1px 2px gray",
+                  borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                   fontSize: "1.2rem",
                 }}
               >
@@ -604,8 +604,8 @@ export default function BasicTable() {
               <TableCell
                 align="left"
                 sx={{
-                  color: "white",
-                  borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                  textShadow: "1px 1px 2px gray",
+                  borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                   fontSize: "1.2rem",
                 }}
               >
@@ -614,8 +614,8 @@ export default function BasicTable() {
               <TableCell
                 align="left"
                 sx={{
-                  color: "white",
-                  borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                  textShadow: "1px 1px 2px gray",
+                  borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                   fontSize: "1.2rem",
                 }}
               >
@@ -624,8 +624,8 @@ export default function BasicTable() {
               <TableCell
                 align="left"
                 sx={{
-                  color: "white",
-                  borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                  textShadow: "1px 1px 2px gray",
+                  borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                   fontSize: "1.2rem",
                 }}
               >
@@ -634,8 +634,8 @@ export default function BasicTable() {
               <TableCell
                 align="left"
                 sx={{
-                  color: "white",
-                  borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                  textShadow: "1px 1px 2px gray",
+                  borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                   fontSize: "1.2rem",
                 }}
               >
@@ -644,8 +644,8 @@ export default function BasicTable() {
               <TableCell
                 align="left"
                 sx={{
-                  color: "white",
-                  borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                  textShadow: "1px 1px 2px gray",
+                  borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                   fontSize: "1.2rem",
                 }}
               >
@@ -667,7 +667,7 @@ export default function BasicTable() {
                   <TableCell
                     align="left"
                     sx={{
-                      borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                      borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                       fontSize: "1.2rem",
                     }}
                   >
@@ -690,10 +690,10 @@ export default function BasicTable() {
                               product.stock
                             )
                           : "transparent",
-                      color: "white",
-                      borderBottom: "2px solid rgba(130, 150, 170, .5)",
+               
+                      borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                       fontSize: "1rem",
-                      textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
+                     
                     }}
                   >
                     {product.category || "N/A"}
@@ -709,10 +709,10 @@ export default function BasicTable() {
                               product.stock
                             )
                           : "transparent",
-                      color: "white",
-                      borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                   
+                      borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                       fontSize: "1rem",
-                      textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
+                    
                     }}
                   >
                     {product.name || "N/A"}
@@ -728,10 +728,10 @@ export default function BasicTable() {
                               product.stock
                             )
                           : "transparent",
-                      color: "white",
-                      borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                   
+                      borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                       fontSize: "1rem",
-                      textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
+                   
                     }}
                   >
                     {product.price != null && !isNaN(product.price)
@@ -752,10 +752,10 @@ export default function BasicTable() {
                               product.stock
                             )
                           : "transparent",
-                      color: "white",
-                      borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                     
+                      borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                       fontSize: "1rem",
-                      textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
+               
                     }}
                   >
                     {product.expiration
@@ -783,11 +783,12 @@ export default function BasicTable() {
                     align="left"
                     sx={{
                       backgroundColor: getStockCellColor(product.stock),
-                      borderBottom: "2px solid rgba(130, 150, 170, .5)",
-                      borderLeft: "2px solid rgba(130, 150, 170, .5)",
-                      borderRight: "2px solid rgba(130, 150, 170, .5)",
+                      borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
+                      borderRight: "2px solid rgba(223, 223, 223, 0.84)",
+                      borderLeft: "2px solid rgba(223, 223, 223, 0.84)",
                       fontSize: "1rem",
-                      textShadow: "1px 1px 2px rgba(0, 0, 0, 0.8)",
+                      fontWeight: "bold",
+              
                     }}
                   >
                     {product.stock != null ? product.stock : "N/A"}
@@ -796,7 +797,7 @@ export default function BasicTable() {
                   <TableCell
                     align="left"
                     sx={{
-                      borderBottom: "2px solid rgba(130, 150, 170, .5)",
+                      borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                       fontSize: "1rem",
                     }}
                   >
@@ -808,6 +809,7 @@ export default function BasicTable() {
                         marginRight: 1,
                         bgcolor: "rgba(24, 190, 41, 0.9)",
                         color: "white",
+                        fontWeight: "bold",
                         "&:hover": {
                           bgcolor: "rgba(24, 190, 41, 0.7)", // Slightly darker on hover
                         },
@@ -816,7 +818,7 @@ export default function BasicTable() {
                       Edit
                     </Button>
                     <Button
-                      sx={{ color: "black" }}
+                      sx={{ color: "white", fontWeight: "bold" }}
                       variant="contained"
                       color="error"
                       onClick={() => handleDeleteOpen(product)}
