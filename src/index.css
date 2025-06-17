@@ -2,8 +2,6 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 
@@ -30,6 +28,35 @@ body {
   min-height: 100vh;
 }
 
+
+
+/* Fix table text and row colors */
+table {
+  color: black !important;
+}
+
+.MuiTable-root{
+  background-color: #9b9a9a !important;
+}
+
+.MuiTableBody-root {
+  background-color: #9b9a9a !important;
+}
+
+ .MuiBox-root {
+  background-color: #333333 !important;
+ }
+
+/* Fix input fields and placeholder text */
+input,
+select {
+  color: black !important;
+}
+
+::placeholder {
+  color: #555 !important;
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
@@ -53,16 +80,28 @@ button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
+.css-1s4lrpv-MuiTableCell-root {
+  border-bottom: 1px solid white !important;
+}
+/* Override dark mode completely */
+@media (prefers-color-scheme: dark) {
+  :root,
+  html,
+  body {
+    background-color: white !important;
+    color: black !important;
+    color-scheme: light !important;
   }
 }
+
+/* Optional: reinforce light styling */
+@media (prefers-color-scheme: light) {
+  :root,
+  html,
+  body {
+    background-color: white;
+    color: black;
+    color-scheme: light;
+  }
+}
+
