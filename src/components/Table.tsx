@@ -24,6 +24,7 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import useStore from "../store";
 import { differenceInDays, parseISO } from "date-fns";
 import SearchFilters from "./SearchFilters";
+import AddProduct from "./AddProduct";
 
 export default function BasicTable() {
   const {
@@ -37,9 +38,7 @@ export default function BasicTable() {
   } = useStore();
   const [filteredProducts, setFilteredProducts] = useState(products);
   const [sortCriteria, setSortCriteria] = useState(""); // Default sorting by none
-  const [secondarySortCriteria, setSecondarySortCriteria] = useState(""); // Default secondary sorting by none
   const [sortOrder, setSortOrder] = useState("asc"); // Default sorting order ascending
-
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10); // Default: 10 rows per page
 
@@ -85,21 +84,6 @@ export default function BasicTable() {
         }
       }
 
-      if (comparison === 0 && secondarySortCriteria) {
-        if (secondarySortCriteria === "category") {
-          comparison = a.category.localeCompare(b.category);
-        } else if (secondarySortCriteria === "name") {
-          comparison = a.name.localeCompare(b.name);
-        } else if (secondarySortCriteria === "price") {
-          comparison = a.price - b.price;
-        } else if (secondarySortCriteria === "expiration") {
-          comparison =
-            new Date(a.expiration).getTime() - new Date(b.expiration).getTime();
-        } else if (secondarySortCriteria === "stock") {
-          comparison = a.stock - b.stock;
-        }
-      }
-
       return sortOrder === "asc" ? comparison : -comparison;
     });
 
@@ -114,13 +98,11 @@ export default function BasicTable() {
     products,
     searchFilters,
     sortCriteria,
-    secondarySortCriteria,
     sortOrder,
     rowsPerPage,
     page,
   ]);
 
-  const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<{
@@ -139,20 +121,6 @@ export default function BasicTable() {
     stock: "",
     expiration: "",
   });
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setNewProduct({
-      name: "",
-      category: "",
-      price: "",
-      stock: "",
-      expiration: "",
-    });
-  };
 
   const handleEditOpen = (product: {
     id: number;
@@ -217,17 +185,6 @@ export default function BasicTable() {
   const handleDeleteClose = () => {
     setDeleteOpen(false);
     setCurrentProduct(null);
-  };
-
-  const handleSave = () => {
-    addProduct({
-      name: newProduct.name,
-      category: newProduct.category,
-      price: parseFloat(newProduct.price),
-      expiration: newProduct.category === "Food" ? newProduct.expiration : "",
-      stock: parseInt(newProduct.stock, 10),
-    });
-    handleClose();
   };
 
   const handleEditSave = () => {
@@ -333,37 +290,6 @@ export default function BasicTable() {
             <MenuItem value="stock">Stock</MenuItem>
           </Select>
         </FormControl>
-
-        <FormControl
-          variant="outlined"
-          sx={{ width: "200px" }}
-          disabled={!sortCriteria} // Disable if "Sort By" has no selection
-        >
-          <InputLabel>And</InputLabel>
-          <Select
-            label="And"
-            value={secondarySortCriteria}
-            onChange={(e) => setSecondarySortCriteria(e.target.value)}
-            sx={{
-              "&.Mui-disabled": {
-                borderColor: "transparent", // Remove white border effect when hovering
-                color: "rgba(0, 0, 0, 0.38)", // Match MUI's disabled color
-              },
-            }}
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            {["category", "name", "price", "expiration", "stock"]
-              .filter((option) => option !== sortCriteria) // Prevent duplicate sorting criteria
-              .map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option.charAt(0).toUpperCase() + option.slice(1)}
-                </MenuItem>
-              ))}
-          </Select>
-        </FormControl>
-
         <FormControl
           variant="outlined"
           sx={{ width: "200px" }}
@@ -381,95 +307,8 @@ export default function BasicTable() {
         </FormControl>
       </Box>
       <div style={{marginTop:"14px"}}></div>
-      <Button
-        variant="contained"
-      
-        onClick={handleOpen}
-        sx={{ marginBottom: 2, width: 170, fontSize: "1rem" }}
-      >
-        Add Product
-      </Button>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle sx={{ fontSize: "1.2rem" }}>Add New Product</DialogTitle>
-        <DialogContent>
-          <Select
-            value={newProduct.category}
-            onChange={handleSelectChange}
-            displayEmpty
-            sx={{ marginBottom: 2, fontSize: "1rem" }}
-          >
-            <MenuItem value="" disabled>
-              Select Category
-            </MenuItem>
-            <MenuItem value="Clothing">Clothing</MenuItem>
-            <MenuItem value="Electronics">Electronics</MenuItem>
-            <MenuItem value="Food">Food</MenuItem>
-          </Select>
-          <TextField
-            autoFocus
-            name="name"
-            label="Name"
-            type="text"
-            fullWidth
-            value={newProduct.name}
-            onChange={handleChange}
-            sx={{ marginBottom: 2, fontSize: "1.2rem" }}
-          />
 
-          <TextField
-            name="price"
-            label="Price"
-            type="number"
-            fullWidth
-            value={newProduct.price}
-            onChange={handleChange}
-            sx={{ marginBottom: 2, fontSize: "1.2rem" }}
-          />
-
-          {newProduct.category === "Food" && (
-            <TextField
-              name="expiration"
-              label="Expiration Date"
-              type="date"
-              fullWidth
-              value={newProduct.expiration}
-              onChange={handleChange}
-              sx={{ marginBottom: 2, fontSize: "1.2rem" }}
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          )}
-
-          <TextField
-            name="stock"
-            label="Stock"
-            type="number"
-            fullWidth
-            value={newProduct.stock}
-            onChange={handleChange}
-            sx={{ fontSize: "1.2rem" }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={handleClose}
-            color="secondary"
-            sx={{ fontSize: "1rem", marginRight: 2 }}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleSave}
-            color="primary"
-            disabled={isSaveDisabled}
-            sx={{ fontSize: "1rem", marginRight: 2 }}
-          >
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+<AddProduct addProduct={addProduct} />
       <Dialog open={editOpen} onClose={handleEditClose}>
         <DialogTitle sx={{ fontSize: "1.2rem" }}>Edit Product</DialogTitle>
         <DialogContent>

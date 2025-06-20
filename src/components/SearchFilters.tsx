@@ -49,7 +49,7 @@ const SearchFilters = () => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", mb: 2 }}>
-      <Box sx={{ mb: 1, color: "white" }}>Search products</Box>
+      <Box sx={{ mb: 1, color: "black" }}>Search products</Box>
       <Box sx={{ display: "flex", gap: 2 }}>
         <TextField
           label="Product Name"
