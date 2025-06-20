@@ -22,7 +22,7 @@ const InventoryMetrics = () => {
 
   return (
     <Box sx={{ mt: 4 }}>
-      <Typography variant="h5" gutterBottom sx={{ color: "white" }}>
+      <Typography variant="h5" gutterBottom>
         Inventory Metrics
       </Typography>
       <TableContainer component={Paper}>

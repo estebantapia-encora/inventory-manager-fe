@@ -44,7 +44,7 @@ export default function BasicTable() {
   const [rowsPerPage, setRowsPerPage] = useState(10); // Default: 10 rows per page
 
   useEffect(() => {
-    fetchProducts(); // ✅ Fetches products ONLY when component mounts
+    //fetchProducts(); // ✅ Fetches products ONLY when component mounts
   }, []); // ✅ Empty dependency array prevents infinite loop
 
   useEffect(() => {

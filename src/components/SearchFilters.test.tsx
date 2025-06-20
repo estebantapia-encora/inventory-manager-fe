@@ -34,7 +34,7 @@ describe('SearchFilters component', () => {
   it('allows selecting a Category', () => {
     render(<SearchFilters />);
     const comboboxes = screen.getAllByRole('combobox');
-    const categorySelect = comboboxes[0]; // First is Category
+    const categorySelect = comboboxes[0]; 
 
     fireEvent.mouseDown(categorySelect);
     const listbox = screen.getByRole('listbox');
@@ -47,7 +47,7 @@ describe('SearchFilters component', () => {
   it('allows selecting Availability', () => {
     render(<SearchFilters />);
     const comboboxes = screen.getAllByRole('combobox');
-    const availabilitySelect = comboboxes[1]; // Second is Availability
+    const availabilitySelect = comboboxes[1]; 
 
     fireEvent.mouseDown(availabilitySelect);
     const listbox = screen.getByRole('listbox');

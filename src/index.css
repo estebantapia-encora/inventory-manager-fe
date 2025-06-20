@@ -36,15 +36,15 @@ table {
 }
 
 .MuiTable-root{
-  background-color: #9b9a9a !important;
+  background-color: #d6d6d6 !important;
 }
 
 .MuiTableBody-root {
-  background-color: #9b9a9a !important;
+  background-color: #d6d6d6 !important;
 }
 
  .MuiBox-root {
-  background-color: #333333 !important;
+  background-color: #efefef !important;
  }
 
 /* Fix input fields and placeholder text */

@@ -49,7 +49,7 @@ const SearchFilters = () => {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", mb: 2 }}>
-      <Box sx={{ mb: 1, color: "white" }}>Search products</Box>
+      <Box sx={{ mb: 1}}>Search products</Box>
       <Box sx={{ display: "flex", gap: 2 }}>
         <TextField
           label="Product Name"
@@ -59,7 +59,7 @@ const SearchFilters = () => {
           variant="outlined"
           sx={{ width: "200px" }} // Set the width for the Product Name input
         />
-        <FormControl variant="outlined" sx={{ width: "200px" }}>
+        <FormControl variant="outlined" sx={{ width: "200px", border: "1px solid white", borderRadius: "4px" }}>
           {" "}
           {/* Set the same width for Category */}
           <InputLabel>Category</InputLabel>

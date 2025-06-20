@@ -5,7 +5,7 @@ import InventoryMetrics from "../components/InventoryMetrics";
 const Dashboard: React.FC = () => {
   return (
     <PageContainer>
-      <h1 style={{ color: "white" }}>Inventory Manager</h1>
+      <h1>Inventory Manager</h1>
       <Table />
       <InventoryMetrics />
     </PageContainer>
