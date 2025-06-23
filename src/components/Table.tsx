@@ -94,14 +94,7 @@ export default function BasicTable() {
     if (page > maxPage) {
       setPage(maxPage);
     }
-  }, [
-    products,
-    searchFilters,
-    sortCriteria,
-    sortOrder,
-    rowsPerPage,
-    page,
-  ]);
+  }, [products, searchFilters, sortCriteria, sortOrder, rowsPerPage, page]);
 
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -306,9 +299,10 @@ export default function BasicTable() {
           </Select>
         </FormControl>
       </Box>
-      <div style={{marginTop:"14px"}}></div>
+      <div style={{ marginTop: "14px" }}></div>
 
-<AddProduct addProduct={addProduct} />
+      <AddProduct addProduct={addProduct} />
+
       <Dialog open={editOpen} onClose={handleEditClose}>
         <DialogTitle sx={{ fontSize: "1.2rem" }}>Edit Product</DialogTitle>
         <DialogContent>
@@ -424,7 +418,7 @@ export default function BasicTable() {
               <TableCell
                 align="left"
                 sx={{
-                textShadow: "1px 1px 2px gray",
+                  textShadow: "1px 1px 2px gray",
                   borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                   fontSize: "1.2rem",
                 }}
@@ -530,10 +524,9 @@ export default function BasicTable() {
                               product.stock
                             )
                           : "transparent",
-               
+
                       borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                       fontSize: "1rem",
-                     
                     }}
                   >
                     {product.category || "N/A"}
@@ -549,10 +542,9 @@ export default function BasicTable() {
                               product.stock
                             )
                           : "transparent",
-                   
+
                       borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                       fontSize: "1rem",
-                    
                     }}
                   >
                     {product.name || "N/A"}
@@ -568,10 +560,9 @@ export default function BasicTable() {
                               product.stock
                             )
                           : "transparent",
-                   
+
                       borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                       fontSize: "1rem",
-                   
                     }}
                   >
                     {product.price != null && !isNaN(product.price)
@@ -592,10 +583,9 @@ export default function BasicTable() {
                               product.stock
                             )
                           : "transparent",
-                     
+
                       borderBottom: "2px solid rgba(223, 223, 223, 0.84)",
                       fontSize: "1rem",
-               
                     }}
                   >
                     {product.expiration
@@ -628,7 +618,6 @@ export default function BasicTable() {
                       borderLeft: "2px solid rgba(223, 223, 223, 0.84)",
                       fontSize: "1rem",
                       fontWeight: "bold",
-              
                     }}
                   >
                     {product.stock != null ? product.stock : "N/A"}
